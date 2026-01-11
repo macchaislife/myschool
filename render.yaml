@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: myschool
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn myschool.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: myschool.settings
+      - key: PYTHON_VERSION
+        value: 3.11
