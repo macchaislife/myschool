@@ -1,0 +1,37 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<h2>{{ survey.title }}</h2>
+<p>{{ survey.description }}</p>
+
+<h3>質問一覧</h3>
+
+<form method="post">
+    {% csrf_token %}
+    
+    {% for q in questions %}
+        <div style="margin-bottom: 20px;">
+            <strong>{{ forloop.counter }}. {{ q.text }}</strong>
+
+            {% if q.q_type == "text" %}
+                <br>
+                <textarea name="q_{{ q.id }}" rows="3" cols="40"></textarea>
+
+            {% elif q.q_type == "choice" %}
+                <br>
+                {% for choice in q.choices.all %}
+                    <label>
+                        <input type="radio" name="q_{{ q.id }}" value="{{ choice.id }}">
+                        {{ choice.text }}
+                    </label><br>
+                {% empty %}
+                    <p style="color: red;">※ この質問には選択肢がまだ登録されていません。</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <button type="submit">回答を送信</button>
+</form>
+
+{% endblock %}

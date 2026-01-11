@@ -1,0 +1,28 @@
+{% extends "home/base.html" %}
+{% block content %}
+
+<h2>アンケート一覧</h2>
+
+{% if surveys %}
+<ul>
+    {% for survey in surveys %}
+    <li>
+        <a href="#">{{ survey.title }}</a><br>
+        <small>{{ survey.created_at }}</small>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>公開中のアンケートはありません。</p>
+{% endif %}
+
+{% for survey in surveys %}
+  <li>
+    <a href="{% url 'survey_detail' survey.id %}">{{ survey.title }}</a>
+    {% if user.is_staff %}
+      | <a href="{% url 'survey_results' survey.id %}">結果</a>
+    {% endif %}
+  </li>
+{% endfor %}
+
+{% endblock %}

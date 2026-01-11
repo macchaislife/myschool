@@ -1,0 +1,47 @@
+{% extends "home/base.html" %}
+{% block content %}
+<h2>投稿一覧</h2>
+
+<style>
+.card-link {
+    text-decoration: none;
+    color: inherit;
+}
+.card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    transition: 0.2s;
+}
+.card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    cursor: pointer;
+}
+</style>
+
+{% for opinion in opinions %}
+<a href="{% url 'opinion_detail' opinion.id %}" class="card-link">
+    <div class="card">
+
+        <h4>{{ opinion.get_category_display }}</h4>
+
+        <p>{{ opinion.content|truncatechars:50 }}</p>
+
+        <!-- ここに学年・クラス追加！ -->
+        {% if opinion.student %}
+            <small>
+                {{ opinion.student.grade }}年{{ opinion.student.class_num }}組  
+                （コード：{{ opinion.student.code }}）
+            </small><br>
+        {% endif %}
+
+        <small>{{ opinion.created_at }}</small>
+    </div>
+</a>
+{% empty %}
+<p>まだ投稿がありません。</p>
+{% endfor %}
+
+{% endblock %}

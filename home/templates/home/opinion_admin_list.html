@@ -1,0 +1,24 @@
+{% extends "home/base.html" %}
+{% block content %}
+
+<h2>意見・要望一覧</h2>
+
+{% for o in opinions %}
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+    <strong>{{ o.get_category_display }}</strong><br>
+    <strong>{{ o.title }}</strong>
+    <p>{{ o.content }}</p>
+
+    {% if o.student %}
+        <small>
+            {{ o.student.grade }}年{{ o.student.class_num }}組
+        </small>
+    {% else %}
+        <small>匿名</small>
+    {% endif %}
+</div>
+{% empty %}
+<p>投稿はまだありません。</p>
+{% endfor %}
+
+{% endblock %}

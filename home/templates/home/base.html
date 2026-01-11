@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}MySchool{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
+</head>
+<body>
+
+    <nav>
+        <a href="/">ホーム</a> |
+        <a href="/about/">このサイトについて</a>
+    </nav>
+
+    <hr>
+
+    {% block content %}
+    {% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
+
+{% if user.is_staff %}
+<hr>
+<a href="{% url 'teacher_dashboard' %}">先生用ダッシュボード</a>
+{% endif %}

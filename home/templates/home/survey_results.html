@@ -1,0 +1,60 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<h2>{{ survey.title }} の集計結果</h2>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Django → JavaScript -->
+<script>
+    const RESULTS = {{ results_json|safe }};
+</script>
+
+<div id="results-area"></div>
+
+<script>
+const area = document.getElementById("results-area");
+
+RESULTS.forEach((r, index) => {
+    const h3 = document.createElement("h3");
+    h3.textContent = r.question;
+    area.appendChild(h3);
+
+    if (r.type === "choice") {
+        const canvas = document.createElement("canvas");
+        area.appendChild(canvas);
+
+        new Chart(canvas, {
+            type: "bar",
+            data: {
+                labels: r.labels,
+                datasets: [{
+                    label: "回答数",
+                    data: r.counts
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    } else {
+        const ul = document.createElement("ul");
+        r.texts.forEach(text => {
+            const li = document.createElement("li");
+            li.textContent = text;
+            ul.appendChild(li);
+        });
+        area.appendChild(ul);
+    }
+});
+</script>
+
+<a href="{% url 'survey_list' %}">← アンケート一覧へ戻る</a>
+{% endblock %}

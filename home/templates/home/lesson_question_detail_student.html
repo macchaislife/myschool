@@ -1,0 +1,15 @@
+{% extends "home/base.html" %}
+{% block content %}
+
+<h2>{{ question.title }}</h2>
+<p>{{ question.content }}</p>
+
+{% if question.answer %}
+    <hr>
+    <h3>先生の回答</h3>
+    <p>{{ question.answer }}</p>
+{% else %}
+    <p><em>まだ先生の回答はありません。</em></p>
+{% endif %}
+
+{% endblock %}

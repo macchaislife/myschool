@@ -1,0 +1,44 @@
+{% extends "home/base.html" %}
+{% block content %}
+
+<h1>先生用ダッシュボード</h1>
+
+<hr>
+
+<h2>📘 授業への質問（最新5件）</h2>
+{% for q in lesson_questions %}
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:8px;">
+    <strong>{{ q.get_subject_display }}</strong>｜{{ q.title }}<br>
+    <small>{{ q.created_at }}</small>
+</div>
+{% empty %}
+<p>質問はありません。</p>
+{% endfor %}
+
+<hr>
+
+<h2>💬 意見・要望（最新5件）</h2>
+{% for o in opinions %}
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:8px;">
+    <strong>{{ o.get_category_display }}</strong>｜{{ o.title }}<br>
+    <small>{{ o.created_at }}</small>
+</div>
+{% empty %}
+<p>意見はありません。</p>
+{% endfor %}
+
+<hr>
+
+<h2>📊 アンケート</h2>
+<ul>
+{% for s in surveys %}
+    <li>
+        {{ s.title }} —
+        <a href="{% url 'survey_results' s.id %}">結果を見る</a>
+    </li>
+{% empty %}
+    <li>アンケートはありません。</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<h2>このアンケートには既に回答しています。</h2>
+<p>1つのアンケートには1回しか回答できません。</p>
+
+<a href="{% url 'survey_list' %}">アンケート一覧に戻る</a>
+{% endblock %}

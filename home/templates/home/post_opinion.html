@@ -1,0 +1,35 @@
+{% extends "home/base.html" %}
+{% block content %}
+
+<h2>学校への意見・要望</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label>カテゴリ</label><br>
+    <select name="category">
+        <option value="lesson">授業について</option>
+        <option value="facility">施設について</option>
+        <option value="event">行事について</option>
+        <option value="rules">校則について</option>
+        <option value="other">その他</option>
+    </select><br><br>
+
+    <label>タイトル</label><br>
+    <input type="text" name="title" required><br><br>
+
+    <label>内容</label><br>
+    <textarea name="content" rows="5" required></textarea><br><br>
+
+    <label>画像（任意）</label><br>
+    <input type="file" name="image"><br><br>
+
+    <label>
+        <input type="checkbox" name="anonymous" checked>
+        匿名で投稿する
+    </label><br><br>
+
+    <button type="submit">送信</button>
+</form>
+
+{% endblock %}

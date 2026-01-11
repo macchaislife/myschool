@@ -1,0 +1,30 @@
+{% extends "home/base.html" %}
+{% block content %}
+
+<h2>授業への質問一覧</h2>
+
+{% for q in questions %}
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+
+    <!-- ★カテゴリ表示を追加 -->
+    <strong>[{{ q.get_category_display }}]</strong><br>
+
+    <strong>{{ q.title }}</strong>
+    <p>{{ q.content }}</p>
+
+    {% if q.student %}
+        <small>
+            {{ q.student.grade }}年{{ q.student.class_num }}組
+        </small>
+    {% else %}
+        <small>匿名</small>
+    {% endif %}
+
+    <br>
+    <a href="{% url 'lesson_question_detail' q.id %}">
+        詳細を見る
+    </a>
+</div>
+{% empty %}
+<p>質問はまだありません。</p>
+{% endfor %}

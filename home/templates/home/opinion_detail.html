@@ -1,0 +1,33 @@
+{% extends "home/base.html" %}
+{% block content %}
+
+<h2>投稿詳細</h2>
+
+<div style="border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
+
+    <h3>{{ opinion.get_category_display }}</h3>
+    <p>{{ opinion.content }}</p>
+
+    {% if opinion.image %}
+        <img src="{{ opinion.image.url }}" alt="投稿画像" width="300" style="margin-top: 10px;">
+    {% endif %}
+
+    <hr>
+
+    <!-- 投稿者情報 -->
+    {% if opinion.student %}
+        <p><strong>投稿者：</strong>
+            {{ opinion.student.grade }}年{{ opinion.student.class_num }}組
+            （コード：{{ opinion.student.code }}）
+        </p>
+    {% else %}
+        <p><strong>投稿者：</strong> 不明</p>
+    {% endif %}
+
+    <p><strong>投稿日時：</strong> {{ opinion.created_at }}</p>
+</div>
+
+<br>
+<a href="{% url 'opinion_list' %}">← 一覧に戻る</a>
+
+{% endblock %}

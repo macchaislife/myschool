@@ -1,0 +1,7 @@
+<h2>{{ survey.title }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">回答を送信</button>
+</form>
