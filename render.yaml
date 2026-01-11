@@ -3,7 +3,7 @@ services:
     name: myschool
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn myschool.wsgi:application
+    startCommand: gunicorn config.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: myschool.settings
