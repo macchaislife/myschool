@@ -12,8 +12,7 @@ import json
 # トップページ
 # =====================================================
 def index(request):
-    return redirect("login_student")
-
+    return render(request, "home/login.html")
 
 def about(request):
     return render(request, "home/about.html")
