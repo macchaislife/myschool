@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import (
     Opinion, StudentID,
     Survey, SurveyQuestion, SurveyResponse, Choice, SurveyAnswer,
-    LessonQuestion
 )
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
@@ -13,7 +12,7 @@ import json
 # トップページ
 # =====================================================
 def index(request):
-    return render(request, "home/index.html")
+    return redirect("login_student")
 
 
 def about(request):

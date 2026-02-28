@@ -1,15 +1,49 @@
 from django.contrib import admin
-from .models import StudentID, Opinion, Survey, SurveyQuestion, SurveyAnswer, Choice
+from .models import (
+    StudentID,
+    StudentEnrollment,
+    Opinion,
+    Survey,
+    SurveyQuestion,
+    SurveyAnswer,
+    Choice,
+)
 
 # ------------------------------
 # StudentID（生徒）
 # ------------------------------
 @admin.register(StudentID)
 class StudentIDAdmin(admin.ModelAdmin):
-    list_display = ("student_id", "grade", "class_num", "number", "created_at")
-    list_filter = ("grade", "class_num")
-    search_fields = ("student_id", "grade", "class_num", "number")
-    ordering = ("grade", "class_num", "number")
+    list_display = (
+        "student_id",
+        "number",
+        "is_graduated",
+        "created_at",
+    )
+
+    list_filter = (
+        "is_graduated",
+    )
+
+    search_fields = ("student_id",)
+    ordering = ("number",)
+
+    actions = ["mark_as_graduated"]
+
+    def mark_as_graduated(self, request, queryset):
+        queryset.update(is_graduated=True)
+
+    mark_as_graduated.short_description = "選択した生徒を卒業にする"
+
+
+# ------------------------------
+# StudentEnrollment（学年管理）
+# ------------------------------
+@admin.register(StudentEnrollment)
+class StudentEnrollmentAdmin(admin.ModelAdmin):
+    list_display = ("student", "school_year", "grade", "class_num")
+    list_filter = ("school_year", "grade", "class_num")
+    ordering = ("school_year", "grade", "class_num")
 
 
 # ------------------------------
@@ -28,20 +62,10 @@ class OpinionAdmin(admin.ModelAdmin):
 # ------------------------------
 @admin.register(Survey)
 class SurveyAdmin(admin.ModelAdmin):
-    list_display = ("title", "created_at", "question_count", "answer_count", "is_public")
+    list_display = ("title", "created_at", "is_public")
     list_filter = ("is_public",)
     search_fields = ("title",)
     ordering = ("-created_at",)
-
-    # 質問数
-    def question_count(self, obj):
-        return obj.questions.count()
-    question_count.short_description = "質問数"
-
-    # 回答数
-    def answer_count(self, obj):
-        return SurveyAnswer.objects.filter(survey=obj).count()
-    answer_count.short_description = "回答数"
 
 
 # ------------------------------
@@ -60,16 +84,23 @@ class SurveyQuestionAdmin(admin.ModelAdmin):
 # ------------------------------
 @admin.register(SurveyAnswer)
 class SurveyAnswerAdmin(admin.ModelAdmin):
-    list_display = ("survey", "question", "student", "short_answer", "created_at")
-    list_filter = ("survey", "student")
+    list_display = ("student", "question", "short_answer", "created_at")
+    list_filter = ("student",)
     search_fields = ("answer_text", "student__student_id")
     ordering = ("-created_at",)
 
-    # 管理画面で長文が見やすくなるために短縮
     def short_answer(self, obj):
-        return obj.answer_text[:30] + ("..." if len(obj.answer_text) > 30 else "")
-    short_answer.short_description = "回答（短縮版）"
+        if obj.answer_text:
+            return obj.answer_text[:30] + ("..." if len(obj.answer_text) > 30 else "")
+        if obj.selected_choice:
+            return obj.selected_choice.text
+        return "-"
+    short_answer.short_description = "回答"
 
+
+# ------------------------------
+# Choice
+# ------------------------------
 @admin.register(Choice)
 class ChoiceAdmin(admin.ModelAdmin):
     list_display = ("text", "question")
