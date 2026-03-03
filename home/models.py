@@ -120,3 +120,28 @@ class SurveyResponse(models.Model):
 
     class Meta:
         unique_together = ("student", "survey")
+
+# =========================
+# 授業への質問
+# =========================
+class LessonQuestion(models.Model):
+    CATEGORY_CHOICES = [
+        ("math", "数学"),
+        ("english", "英語"),
+        ("science", "理科"),
+        ("social", "社会"),
+        ("other", "その他"),
+    ]
+
+    student = models.ForeignKey(StudentID, on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    subject = models.CharField(max_length=100)
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    answer = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    answered_at = models.DateTimeField(null=True, blank=True)
+    is_anonymous = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
