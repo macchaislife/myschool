@@ -17,7 +17,12 @@ class Profile(models.Model):
 # 生徒の裏ID（管理用）
 # =========================
 class StudentID(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        null=True,      # ← 追加
+        blank=True      # ← 追加
+    )
     number = models.PositiveIntegerField(unique=True)
     student_id = models.CharField(max_length=10, unique=True)
     is_graduated = models.BooleanField(default=False)
@@ -37,7 +42,7 @@ class StudentID(models.Model):
 # =========================
 class StudentEnrollment(models.Model):
     student = models.ForeignKey(StudentID, on_delete=models.CASCADE)
-    school_year = models.IntegerField()  # 例: 2026
+    school_year = models.IntegerField()
     grade = models.PositiveSmallIntegerField()
     class_num = models.PositiveSmallIntegerField()
 
@@ -120,6 +125,7 @@ class SurveyResponse(models.Model):
 
     class Meta:
         unique_together = ("student", "survey")
+
 
 # =========================
 # 授業への質問
