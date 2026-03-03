@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import (
     Opinion, StudentID,
-    Survey, SurveyQuestion, SurveyResponse, Choice, SurveyAnswer,
+    Survey, SurveyQuestion, SurveyResponse, Choice, SurveyAnswer, LessonQuestion, 
 )
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
