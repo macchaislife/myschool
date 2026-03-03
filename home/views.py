@@ -70,7 +70,7 @@ def survey_list(request):
 
 def login_student(request):
     if request.method == "POST":
-        code = request.POST.get("code")
+        code = request.POST.get("student_code")
         student = StudentID.objects.filter(student_id=code).first()
 
         if student:
