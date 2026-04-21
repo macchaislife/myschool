@@ -240,3 +240,19 @@ def teacher_dashboard(request):
         "opinions": Opinion.objects.all().order_by("-created_at")[:5],
         "surveys": Survey.objects.all().order_by("-created_at"),
     })
+
+
+
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+
+def create_admin(request):
+    User = get_user_model()
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="20209304"
+        )
+        return HttpResponse("admin created")
+    return HttpResponse("already exists")

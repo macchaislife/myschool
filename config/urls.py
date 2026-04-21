@@ -21,3 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),  # ← これだけでOK！
 ]
+
+
+path("create-admin/", views.create_admin),

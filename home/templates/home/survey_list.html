@@ -1,28 +1,33 @@
 {% extends "home/base.html" %}
 {% block content %}
 
-<h2>アンケート一覧</h2>
+<div class="container">
 
-{% if surveys %}
-<ul>
-    {% for survey in surveys %}
-    <li>
-        <a href="#">{{ survey.title }}</a><br>
-        <small>{{ survey.created_at }}</small>
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>公開中のアンケートはありません。</p>
-{% endif %}
+    <h2 class="title">アンケート一覧</h2>
 
-{% for survey in surveys %}
-  <li>
-    <a href="{% url 'survey_detail' survey.id %}">{{ survey.title }}</a>
-    {% if user.is_staff %}
-      | <a href="{% url 'survey_results' survey.id %}">結果</a>
+    {% if surveys %}
+    <div class="card-list">
+        {% for survey in surveys %}
+        <div class="card">
+            <a href="{% url 'survey_detail' survey.id %}" class="card-title">
+                {{ survey.title }}
+            </a>
+
+            <p class="date">{{ survey.created_at }}</p>
+
+            {% if user.is_staff %}
+            <a href="{% url 'survey_results' survey.id %}" class="result-btn">
+                結果を見る
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <p class="empty">公開中のアンケートはありません。</p>
     {% endif %}
-  </li>
-{% endfor %}
+
+</div>
 
 {% endblock %}

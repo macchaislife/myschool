@@ -1,7 +1,57 @@
-{% extends "base.html" %}
-
-{% block title %}ホーム{% endblock %}
-
+{% extends "home/base.html" %}
 {% block content %}
-<h1>ようこそ！これはホーム画面です！</h1>
+
+<div class="container">
+
+    <!-- ヒーロー -->
+    <div class="hero">
+        <h1>SSボックス</h1>
+        <p>学校への意見・質問を気軽に投稿しよう</p>
+
+        <a href="#" class="btn-main">意見を投稿する</a><br>
+        <a href="#" class="btn-sub">質問を投稿する</a>
+    </div>
+
+    <!-- グリッド -->
+    <div class="grid">
+        <div class="grid-item red">意見投稿</div>
+        <div class="grid-item orange">意見箱</div>
+        <div class="grid-item green">みんなで改善</div>
+        <div class="grid-item blue">声を届ける</div>
+    </div>
+
+    <!-- 最新の意見 -->
+    <div class="section">
+        <div class="section-header">
+            <h3>最新の意見</h3>
+            <a href="#" class="more">もっと見る →</a>
+        </div>
+
+        {% if surveys %}
+            {% for survey in surveys %}
+                <p>{{ survey.title }}</p>
+            {% endfor %}
+        {% else %}
+        <div class="empty-box">
+            <p>まだ意見がありません</p>
+            <a href="#" class="btn-main">最初の意見を投稿する</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- 質問 -->
+    <div class="section">
+        <div class="section-header">
+            <h3>意見箱（質問）</h3>
+            <a href="#" class="more">もっと見る →</a>
+        </div>
+
+        <div class="empty-box">
+            <p>まだ質問がありません</p>
+            <a href="#" class="btn-sub">最初の質問を投稿する</a>
+        </div>
+    </div>
+
+</div>
+
 {% endblock %}
