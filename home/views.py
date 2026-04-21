@@ -12,7 +12,7 @@ import json
 # トップページ
 # =====================================================
 def index(request):
-    return render(request, "home/index.html")
+    return render(request, "home/index.html") 
 
 def about(request):
     return render(request, "home/about.html")
@@ -75,7 +75,7 @@ def login_student(request):
 
         if student:
             request.session["student_id"] = student.id
-            return redirect("survey_list")
+            return redirect("index")  # ← ここ修正！！！
 
         return render(request, "home/login.html", {"error": "この生徒IDは存在しません。"})
 
@@ -240,7 +240,6 @@ def teacher_dashboard(request):
         "opinions": Opinion.objects.all().order_by("-created_at")[:5],
         "surveys": Survey.objects.all().order_by("-created_at"),
     })
-
 
 
 from django.contrib.auth import get_user_model
