@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
     # 生徒ログイン
     path("login/", views.login_student, name="login_student"),
-    path("", views.login_student, name="login"),
+    path("", views.index, name="index"),
 
     # アンケート
     path("surveys/", views.survey_list, name="survey_list"),

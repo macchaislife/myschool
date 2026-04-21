@@ -12,7 +12,7 @@ import json
 # トップページ
 # =====================================================
 def index(request):
-    return render(request, "home/login.html")
+    return render(request, "home/index.html")
 
 def about(request):
     return render(request, "home/about.html")
