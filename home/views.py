@@ -75,7 +75,7 @@ def login_student(request):
 
         if student:
             request.session["student_id"] = student.id
-            return redirect("index")  # ← ここ修正！！！
+            return redirect("index")  
 
         return render(request, "home/login.html", {"error": "この生徒IDは存在しません。"})
 
