@@ -26,7 +26,6 @@ SECRET_KEY = 'django-insecure-v&lmwz_zwx*vxeoc^b_)f#jhsgugurh%_kz0mb_#53asg7l#9p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -128,3 +127,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://myschool-ob5a.onrender.com"
+]
