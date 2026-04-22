@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import (
     Opinion, StudentID,
-    Survey, SurveyQuestion, SurveyResponse, Choice, SurveyAnswer, LessonQuestion, 
+    Survey, SurveyQuestion, SurveyResponse, Choice, SurveyAnswer, LessonQuestion,
 )
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
 import json
 
 
@@ -12,10 +14,33 @@ import json
 # トップページ
 # =====================================================
 def index(request):
-    return render(request, "home/index.html") 
+    # ログインしてない人はログイン画面へ
+    if not request.session.get("student_id"):
+        return redirect("login_student")
+    return render(request, "home/index.html")
+
 
 def about(request):
     return render(request, "home/about.html")
+
+
+# =====================================================
+# ログイン
+# =====================================================
+def login_student(request):
+    if request.method == "POST":
+        code = request.POST.get("student_code")
+        student = StudentID.objects.filter(student_id=code).first()
+
+        if student:
+            request.session["student_id"] = student.id
+            return redirect("index")  # ←トップへ
+
+        return render(request, "home/login.html", {
+            "error": "この生徒IDは存在しません。"
+        })
+
+    return render(request, "home/login.html")
 
 
 # =====================================================
@@ -23,6 +48,9 @@ def about(request):
 # =====================================================
 def post_opinion(request):
     student_id = request.session.get("student_id")
+    if not student_id:
+        return redirect("login_student")
+
     student = StudentID.objects.filter(id=student_id).first()
 
     if request.method == "POST":
@@ -64,22 +92,11 @@ def opinion_admin_list(request):
 # アンケート機能
 # =====================================================
 def survey_list(request):
+    if not request.session.get("student_id"):
+        return redirect("login_student")
+
     surveys = Survey.objects.filter(is_public=True).order_by("-created_at")
     return render(request, "home/survey_list.html", {"surveys": surveys})
-
-
-def login_student(request):
-    if request.method == "POST":
-        code = request.POST.get("student_code")
-        student = StudentID.objects.filter(student_id=code).first()
-
-        if student:
-            request.session["student_id"] = student.id
-            return redirect("index")  
-
-        return render(request, "home/login.html", {"error": "この生徒IDは存在しません。"})
-
-    return render(request, "home/login.html")
 
 
 def survey_detail(request, survey_id):
@@ -183,6 +200,9 @@ def survey_results(request, survey_id):
 # =====================================================
 def post_lesson_question(request):
     student_id = request.session.get("student_id")
+    if not student_id:
+        return redirect("login_student")
+
     student = StudentID.objects.filter(id=student_id).first()
 
     if request.method == "POST":
@@ -200,12 +220,7 @@ def post_lesson_question(request):
 
 
 def lesson_question_list(request):
-    category = request.GET.get("category")
-
     questions = LessonQuestion.objects.all().order_by("-created_at")
-    if category:
-        questions = questions.filter(category=category)
-
     return render(request, "home/lesson_question_list.html", {
         "questions": questions
     })
@@ -242,9 +257,9 @@ def teacher_dashboard(request):
     })
 
 
-from django.contrib.auth import get_user_model
-from django.http import HttpResponse
-
+# =====================================================
+# 管理者作成（1回だけ）
+# =====================================================
 def create_admin(request):
     User = get_user_model()
     if not User.objects.filter(username="admin").exists():
