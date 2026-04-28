@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 
 # =====================================================
@@ -27,6 +28,7 @@ def about(request):
 # =====================================================
 # ログイン
 # =====================================================
+@csrf_exempt
 def login_student(request):
     if request.method == "POST":
         code = request.POST.get("student_code")
@@ -34,11 +36,9 @@ def login_student(request):
 
         if student:
             request.session["student_id"] = student.id
-            return redirect("index")  # ←トップへ
+            return redirect("index")  
 
-        return render(request, "home/login.html", {
-            "error": "この生徒IDは存在しません。"
-        })
+        return render(request, "home/login.html", {"error": "この生徒IDは存在しません。"})
 
     return render(request, "home/login.html")
 
