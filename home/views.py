@@ -7,17 +7,17 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
-import json
 from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 # =====================================================
 # トップページ
 # =====================================================
 def index(request):
-    # ログインしてない人はログイン画面へ
     if not request.session.get("student_id"):
         return redirect("login_student")
+
     return render(request, "home/index.html")
 
 
@@ -36,18 +36,23 @@ def login_student(request):
 
         if student:
             request.session["student_id"] = student.id
-            return redirect("index")  
+            return redirect("index")
 
-        return render(request, "home/login.html", {"error": "この生徒IDは存在しません。"})
+        return render(
+            request,
+            "home/login.html",
+            {"error": "この生徒IDは存在しません。"}
+        )
 
     return render(request, "home/login.html")
 
 
 # =====================================================
-# 意見投稿機能
+# 意見投稿
 # =====================================================
 def post_opinion(request):
     student_id = request.session.get("student_id")
+
     if not student_id:
         return redirect("login_student")
 
@@ -73,12 +78,16 @@ def thanks(request):
 
 def opinion_list(request):
     opinions = Opinion.objects.all().order_by("-created_at")
-    return render(request, "home/opinion_list.html", {"opinions": opinions})
+    return render(request, "home/opinion_list.html", {
+        "opinions": opinions
+    })
 
 
 def opinion_detail(request, opinion_id):
     opinion = get_object_or_404(Opinion, id=opinion_id)
-    return render(request, "home/opinion_detail.html", {"opinion": opinion})
+    return render(request, "home/opinion_detail.html", {
+        "opinion": opinion
+    })
 
 
 def opinion_admin_list(request):
@@ -89,18 +98,22 @@ def opinion_admin_list(request):
 
 
 # =====================================================
-# アンケート機能
+# アンケート
 # =====================================================
 def survey_list(request):
     if not request.session.get("student_id"):
         return redirect("login_student")
 
     surveys = Survey.objects.filter(is_public=True).order_by("-created_at")
-    return render(request, "home/survey_list.html", {"surveys": surveys})
+
+    return render(request, "home/survey_list.html", {
+        "surveys": surveys
+    })
 
 
 def survey_detail(request, survey_id):
     student_id = request.session.get("student_id")
+
     if not student_id:
         return redirect("login_student")
 
@@ -112,22 +125,27 @@ def survey_detail(request, survey_id):
         return redirect("survey_already")
 
     if request.method == "POST":
-        SurveyResponse.objects.create(student=student, survey=survey)
+        SurveyResponse.objects.create(
+            student=student,
+            survey=survey
+        )
 
         for q in questions:
             value = request.POST.get(f"q_{q.id}")
 
+            # 記述式
             if q.q_type == "text":
                 SurveyAnswer.objects.create(
-                    survey=survey,
                     question=q,
                     student=student,
                     answer_text=value
                 )
+
+            # 選択式
             else:
                 choice = Choice.objects.filter(id=value).first()
+
                 SurveyAnswer.objects.create(
-                    survey=survey,
                     question=q,
                     student=student,
                     selected_choice=choice
@@ -139,7 +157,6 @@ def survey_detail(request, survey_id):
         "survey": survey,
         "questions": questions
     })
-
 
 def survey_thanks(request):
     return render(request, "home/survey_thanks.html")
@@ -163,12 +180,13 @@ def survey_results(request, survey_id):
 
             for c in q.choices.all():
                 labels.append(c.text)
-                counts.append(
-                    SurveyAnswer.objects.filter(
-                        question=q,
-                        selected_choice=c
-                    ).count()
-                )
+
+                count = SurveyAnswer.objects.filter(
+                    question=q,
+                    selected_choice=c
+                ).count()
+
+                counts.append(count)
 
             results.append({
                 "question": q.text,
@@ -179,8 +197,9 @@ def survey_results(request, survey_id):
 
         else:
             texts = list(
-                SurveyAnswer.objects.filter(question=q)
-                .values_list("answer_text", flat=True)
+                SurveyAnswer.objects.filter(
+                    question=q
+                ).values_list("answer_text", flat=True)
             )
 
             results.append({
@@ -196,10 +215,11 @@ def survey_results(request, survey_id):
 
 
 # =====================================================
-# 授業への質問機能
+# 授業への質問
 # =====================================================
 def post_lesson_question(request):
     student_id = request.session.get("student_id")
+
     if not student_id:
         return redirect("login_student")
 
@@ -214,6 +234,7 @@ def post_lesson_question(request):
             content=request.POST.get("content"),
             is_anonymous=bool(request.POST.get("anonymous")),
         )
+
         return redirect("lesson_question_list")
 
     return render(request, "home/post_lesson_question.html")
@@ -221,6 +242,7 @@ def post_lesson_question(request):
 
 def lesson_question_list(request):
     questions = LessonQuestion.objects.all().order_by("-created_at")
+
     return render(request, "home/lesson_question_list.html", {
         "questions": questions
     })
@@ -228,6 +250,7 @@ def lesson_question_list(request):
 
 def lesson_question_student_detail(request, question_id):
     question = get_object_or_404(LessonQuestion, id=question_id)
+
     return render(request, "home/lesson_question_detail.html", {
         "question": question
     })
@@ -241,6 +264,7 @@ def lesson_question_detail(request, question_id):
         question.answer = request.POST.get("answer")
         question.answered_at = timezone.now()
         question.save()
+
         return redirect("teacher_dashboard")
 
     return render(request, "home/lesson_question_detail.html", {
@@ -262,6 +286,7 @@ def teacher_dashboard(request):
 # =====================================================
 def create_admin(request):
     User = get_user_model()
+
     if not User.objects.filter(username="admin").exists():
         User.objects.create_superuser(
             username="admin",
@@ -269,4 +294,5 @@ def create_admin(request):
             password="20209304"
         )
         return HttpResponse("admin created")
+
     return HttpResponse("already exists")

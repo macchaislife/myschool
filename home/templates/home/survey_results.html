@@ -46,15 +46,17 @@ RESULTS.forEach((r, index) => {
         });
     } else {
         const ul = document.createElement("ul");
+
         r.texts.forEach(text => {
             const li = document.createElement("li");
-            li.textContent = text;
+            li.textContent = text || "（未入力）";
             ul.appendChild(li);
         });
+
         area.appendChild(ul);
     }
 });
 </script>
 
 <a href="{% url 'survey_list' %}">← アンケート一覧へ戻る</a>
-{% endblock %}                      
+{% endblock %}
