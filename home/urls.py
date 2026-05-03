@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views  # ← これ絶対必要！！！
+from . import views
 
 urlpatterns = [
     # トップページ
@@ -20,10 +20,22 @@ urlpatterns = [
 
     # 授業質問
     path("lesson/question/", views.post_lesson_question, name="post_lesson_question"),
-    path("lesson/question/<int:question_id>/", views.lesson_question_student_detail, name="lesson_question_student_detail"),
+    path("lesson/questions/", views.lesson_question_list, name="lesson_question_list"),
+    path(
+        "lesson/question/<int:question_id>/",
+        views.lesson_question_student_detail,
+        name="lesson_question_student_detail"
+    ),
 
     # 管理者
     path("admin/opinions/", views.opinion_admin_list, name="opinion_admin_list"),
     path("admin/dashboard/", views.teacher_dashboard, name="teacher_dashboard"),
-    path("admin/lesson-question/<int:question_id>/", views.lesson_question_detail, name="lesson_question_detail"),
+    path(
+        "admin/lesson-question/<int:question_id>/",
+        views.lesson_question_detail,
+        name="lesson_question_detail"
+    ),
+
+    # 管理者作成
+    path("create-admin/", views.create_admin, name="create_admin"),
 ]

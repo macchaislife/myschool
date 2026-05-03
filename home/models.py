@@ -1,9 +1,11 @@
+# models.py
+
 from django.db import models
 from django.contrib.auth.models import User
 
 
 # =========================
-# プロフィール（表示用）
+# プロフィール
 # =========================
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -14,14 +16,14 @@ class Profile(models.Model):
 
 
 # =========================
-# 生徒の裏ID（管理用）
+# 生徒ID
 # =========================
 class StudentID(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
-        null=True,      # ← 追加
-        blank=True      # ← 追加
+        null=True,
+        blank=True
     )
     number = models.PositiveIntegerField(unique=True)
     student_id = models.CharField(max_length=10, unique=True)
@@ -38,7 +40,7 @@ class StudentID(models.Model):
 
 
 # =========================
-# 年度ごとの所属（学年・組）
+# 所属クラス
 # =========================
 class StudentEnrollment(models.Model):
     student = models.ForeignKey(StudentID, on_delete=models.CASCADE)
@@ -65,7 +67,12 @@ class Opinion(models.Model):
         ("other", "その他"),
     ]
 
-    student = models.ForeignKey(StudentID, on_delete=models.SET_NULL, null=True)
+    student = models.ForeignKey(
+        StudentID,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     title = models.CharField(max_length=100)
     content = models.TextField()
@@ -95,7 +102,11 @@ class SurveyQuestion(models.Model):
         ("choice", "選択式"),
     ]
 
-    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="questions")
+    survey = models.ForeignKey(
+        Survey,
+        on_delete=models.CASCADE,
+        related_name="questions"
+    )
     text = models.CharField(max_length=300)
     q_type = models.CharField(max_length=10, choices=QUESTION_TYPE)
 
@@ -104,21 +115,35 @@ class SurveyQuestion(models.Model):
 
 
 class Choice(models.Model):
-    question = models.ForeignKey(SurveyQuestion, on_delete=models.CASCADE, related_name="choices")
+    question = models.ForeignKey(
+        SurveyQuestion,
+        on_delete=models.CASCADE,
+        related_name="choices"
+    )
     text = models.CharField(max_length=200)
 
     def __str__(self):
         return self.text
 
 
+# 回答内容
 class SurveyAnswer(models.Model):
     student = models.ForeignKey(StudentID, on_delete=models.CASCADE)
     question = models.ForeignKey(SurveyQuestion, on_delete=models.CASCADE)
     answer_text = models.TextField(blank=True, null=True)
-    selected_choice = models.ForeignKey(Choice, on_delete=models.SET_NULL, blank=True, null=True)
+    selected_choice = models.ForeignKey(
+        Choice,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.student} - {self.question}"
 
+
+# 回答済み判定
 class SurveyResponse(models.Model):
     student = models.ForeignKey(StudentID, on_delete=models.CASCADE)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
@@ -126,9 +151,12 @@ class SurveyResponse(models.Model):
     class Meta:
         unique_together = ("student", "survey")
 
+    def __str__(self):
+        return f"{self.student} - {self.survey}"
+
 
 # =========================
-# 授業への質問
+# 授業質問
 # =========================
 class LessonQuestion(models.Model):
     CATEGORY_CHOICES = [
@@ -139,7 +167,12 @@ class LessonQuestion(models.Model):
         ("other", "その他"),
     ]
 
-    student = models.ForeignKey(StudentID, on_delete=models.SET_NULL, null=True, blank=True)
+    student = models.ForeignKey(
+        StudentID,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     subject = models.CharField(max_length=100)
     title = models.CharField(max_length=200)
