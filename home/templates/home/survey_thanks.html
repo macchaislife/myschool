@@ -1,8 +1,10 @@
 {% extends "home/base.html" %}
 
 {% block content %}
-<h2>回答ありがとうございました！</h2>
-<p>あなたの意見は集計に反映されます。</p>
+<div class="container">
+    <h2>回答ありがとうございました！</h2>
+    <p>あなたの意見は集計に反映されます。</p>
 
-<a href="{% url 'home' %}">ホームに戻る</a>
+    <a href="{% url 'index' %}" class="btn-main">ホームに戻る</a>
+</div>
 {% endblock %}
