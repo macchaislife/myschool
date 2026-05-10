@@ -1,35 +1,382 @@
 {% extends "home/base.html" %}
 {% block content %}
 
-<h2>学校への意見・要望</h2>
+<style>
+body{
+    background:#f8f5f5;
+}
 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
+.post-container{
+    max-width:700px;
+    margin:40px auto;
+    padding:0 16px;
+}
 
-    <label>カテゴリ</label><br>
-    <select name="category">
-        <option value="lesson">授業について</option>
-        <option value="facility">施設について</option>
-        <option value="event">行事について</option>
-        <option value="rules">校則について</option>
-        <option value="other">その他</option>
-    </select><br><br>
+.breadcrumb{
+    color:#777;
+    margin-bottom:30px;
+    font-size:15px;
+}
 
-    <label>タイトル</label><br>
-    <input type="text" name="title" required><br><br>
+.post-card{
+    background:white;
+    border:1px solid #e6dede;
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,0,0,0.03);
+}
 
-    <label>内容</label><br>
-    <textarea name="content" rows="5" required></textarea><br><br>
+.post-header{
+    padding:35px 30px;
+    border-bottom:1px solid #eee;
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
 
-    <label>画像（任意）</label><br>
-    <input type="file" name="image"><br><br>
+.icon-circle{
+    width:72px;
+    height:72px;
+    border-radius:50%;
+    background:#d90012;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-size:34px;
+}
 
-    <label>
-        <input type="checkbox" name="anonymous" checked>
-        匿名で投稿する
-    </label><br><br>
+.post-header h1{
+    margin:0;
+    font-size:42px;
+    font-weight:700;
+}
 
-    <button type="submit">送信</button>
-</form>
+.post-header p{
+    margin-top:8px;
+    color:#777;
+    font-size:20px;
+}
+
+.post-body{
+    padding:35px 30px;
+}
+
+.form-group{
+    margin-bottom:35px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:12px;
+    font-size:24px;
+    font-weight:600;
+}
+
+.required{
+    color:#d90012;
+}
+
+.input,
+.textarea,
+.select{
+    width:100%;
+    padding:18px;
+    border:2px solid #eadede;
+    border-radius:16px;
+    font-size:20px;
+    background:white;
+    box-sizing:border-box;
+}
+
+.textarea{
+    min-height:180px;
+    resize:vertical;
+}
+
+.counter{
+    text-align:right;
+    color:#888;
+    margin-top:8px;
+    font-size:16px;
+}
+
+.anonymous-box{
+    background:#fff4f4;
+    border-radius:18px;
+    padding:25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:35px;
+}
+
+.anonymous-title{
+    font-size:28px;
+    font-weight:700;
+}
+
+.anonymous-sub{
+    color:#666;
+    margin-top:6px;
+    font-size:18px;
+}
+
+.switch{
+    position:relative;
+    display:inline-block;
+    width:64px;
+    height:34px;
+}
+
+.switch input{
+    opacity:0;
+    width:0;
+    height:0;
+}
+
+.slider{
+    position:absolute;
+    cursor:pointer;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background:#ddd;
+    transition:.4s;
+    border-radius:34px;
+}
+
+.slider:before{
+    position:absolute;
+    content:"";
+    height:26px;
+    width:26px;
+    left:4px;
+    bottom:4px;
+    background:white;
+    transition:.4s;
+    border-radius:50%;
+}
+
+.switch input:checked + .slider{
+    background:#d90012;
+}
+
+.switch input:checked + .slider:before{
+    transform:translateX(30px);
+}
+
+.button-row{
+    display:flex;
+    gap:16px;
+}
+
+.back-btn,
+.submit-btn{
+    flex:1;
+    padding:18px;
+    border-radius:16px;
+    font-size:24px;
+    font-weight:700;
+    text-align:center;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.back-btn{
+    background:white;
+    border:2px solid #ddd;
+    color:#222;
+}
+
+.submit-btn{
+    background:#d90012;
+    border:none;
+    color:white;
+}
+
+@media(max-width:768px){
+
+    .post-header{
+        padding:25px 20px;
+    }
+
+    .post-body{
+        padding:25px 20px;
+    }
+
+    .post-header h1{
+        font-size:28px;
+    }
+
+    .post-header p{
+        font-size:16px;
+    }
+
+    .icon-circle{
+        width:56px;
+        height:56px;
+        font-size:28px;
+    }
+
+    .form-group label{
+        font-size:20px;
+    }
+
+    .input,
+    .textarea,
+    .select{
+        font-size:18px;
+        padding:15px;
+    }
+
+    .anonymous-title{
+        font-size:22px;
+    }
+
+    .anonymous-sub{
+        font-size:14px;
+    }
+
+    .button-row{
+        flex-direction:column;
+    }
+
+    .back-btn,
+    .submit-btn{
+        font-size:20px;
+    }
+}
+</style>
+
+<div class="post-container">
+
+    <div class="breadcrumb">
+        ホーム / 意見一覧 / 意見を投稿
+    </div>
+
+    <div class="post-card">
+
+        <div class="post-header">
+
+            <div class="icon-circle">
+                ✎
+            </div>
+
+            <div>
+                <h1>意見を投稿する</h1>
+                <p>学校への意見・要望を投稿しましょう</p>
+            </div>
+
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <div class="post-body">
+
+                <div class="form-group">
+
+                    <label>カテゴリ</label>
+
+                    <select name="category" class="select">
+
+                        <option value="">カテゴリを選択（任意）</option>
+
+                        <option value="lesson">授業</option>
+                        <option value="facility">施設</option>
+                        <option value="event">行事</option>
+                        <option value="rules">校則</option>
+                        <option value="other">その他</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        タイトル <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="title"
+                        maxlength="200"
+                        class="input"
+                        placeholder="意見のタイトルを入力してください"
+                        required
+                    >
+
+                    <div class="counter">
+                        0/200
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        内容 <span class="required">*</span>
+                    </label>
+
+                    <textarea
+                        name="content"
+                        class="textarea"
+                        placeholder="意見の詳細を入力してください。具体的に書くほど伝わりやすくなります。"
+                        required
+                    ></textarea>
+
+                </div>
+
+                <div class="anonymous-box">
+
+                    <div>
+                        <div class="anonymous-title">
+                            匿名で投稿する
+                        </div>
+
+                        <div class="anonymous-sub">
+                            オンにすると名前が表示されません
+                        </div>
+                    </div>
+
+                    <label class="switch">
+
+                        <input type="checkbox" name="anonymous">
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+                <div class="button-row">
+
+                    <a
+                        href="{% url 'index' %}"
+                        class="back-btn"
+                    >
+                        ← 戻る
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="submit-btn"
+                    >
+                        ✎ 投稿する
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 
 {% endblock %}

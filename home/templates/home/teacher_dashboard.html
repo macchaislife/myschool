@@ -1,44 +1,151 @@
 {% extends "home/base.html" %}
+
 {% block content %}
 
-<h1>先生用ダッシュボード</h1>
+<div class="container">
 
-<hr>
+    <h1 style="margin-bottom: 30px;">
+        先生用ダッシュボード
+    </h1>
 
-<h2>📘 授業への質問（最新5件）</h2>
-{% for q in lesson_questions %}
-<div style="border:1px solid #ccc; padding:10px; margin-bottom:8px;">
-    <strong>{{ q.get_subject_display }}</strong>｜{{ q.title }}<br>
-    <small>{{ q.created_at }}</small>
+    <!-- 授業への質問 -->
+    <div class="section">
+
+        <h2>📘 授業への質問（最新5件）</h2>
+
+        {% for q in lesson_questions %}
+
+        <a
+            href="{% url 'lesson_question_detail' q.id %}"
+            style="text-decoration:none; color:black;"
+        >
+            <div style="
+                border:1px solid #ddd;
+                padding:15px;
+                margin-bottom:12px;
+                border-radius:12px;
+                background:white;
+            ">
+
+                <strong>
+                    {{ q.subject }}
+                </strong>
+
+                ｜
+
+                {{ q.title }}
+
+                <br>
+
+                <small style="color:gray;">
+                    {{ q.created_at }}
+                </small>
+
+            </div>
+        </a>
+
+        {% empty %}
+
+        <p>質問はありません。</p>
+
+        {% endfor %}
+
+    </div>
+
+    <hr style="margin:40px 0;">
+
+    <!-- 意見 -->
+    <div class="section">
+
+        <h2>💬 意見・要望（最新5件）</h2>
+
+        {% for o in opinions %}
+
+        <a
+            href="{% url 'opinion_detail' o.id %}"
+            style="text-decoration:none; color:black;"
+        >
+
+            <div style="
+                border:1px solid #ddd;
+                padding:15px;
+                margin-bottom:12px;
+                border-radius:12px;
+                background:white;
+            ">
+
+                <strong>
+                    {{ o.get_category_display }}
+                </strong>
+
+                ｜
+
+                {{ o.title }}
+
+                <br>
+
+                <small style="color:gray;">
+                    {{ o.created_at }}
+                </small>
+
+            </div>
+
+        </a>
+
+        {% empty %}
+
+        <p>意見はありません。</p>
+
+        {% endfor %}
+
+    </div>
+
+    <hr style="margin:40px 0;">
+
+    <!-- アンケート -->
+    <div class="section">
+
+        <h2>📊 アンケート</h2>
+
+        {% for s in surveys %}
+
+        <div style="
+            border:1px solid #ddd;
+            padding:15px;
+            margin-bottom:12px;
+            border-radius:12px;
+            background:white;
+        ">
+
+            <strong>
+                {{ s.title }}
+            </strong>
+
+            <br><br>
+
+            <a
+                href="{% url 'survey_results' s.id %}"
+                style="
+                    background:#2f5d50;
+                    color:white;
+                    padding:10px 16px;
+                    border-radius:8px;
+                    text-decoration:none;
+                "
+            >
+                結果を見る
+            </a>
+
+        </div>
+
+        {% empty %}
+
+        <p>アンケートはありません。</p>
+
+        {% endfor %}
+
+    </div>
+
 </div>
-{% empty %}
-<p>質問はありません。</p>
-{% endfor %}
-
-<hr>
-
-<h2>💬 意見・要望（最新5件）</h2>
-{% for o in opinions %}
-<div style="border:1px solid #ccc; padding:10px; margin-bottom:8px;">
-    <strong>{{ o.get_category_display }}</strong>｜{{ o.title }}<br>
-    <small>{{ o.created_at }}</small>
-</div>
-{% empty %}
-<p>意見はありません。</p>
-{% endfor %}
-
-<hr>
-
-<h2>📊 アンケート</h2>
-<ul>
-{% for s in surveys %}
-    <li>
-        {{ s.title }} —
-        <a href="{% url 'survey_results' s.id %}">結果を見る</a>
-    </li>
-{% empty %}
-    <li>アンケートはありません。</li>
-{% endfor %}
-</ul>
 
 {% endblock %}

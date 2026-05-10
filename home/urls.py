@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     # トップページ
@@ -35,6 +36,14 @@ urlpatterns = [
         views.lesson_question_detail,
         name="lesson_question_detail"
     ),
+
+    path(
+    "teacher/login/",
+    auth_views.LoginView.as_view(
+        template_name="home/teacher_login.html"
+    ),
+    name="teacher_login"
+),
 
     # 管理者作成
     path("create-admin/", views.create_admin, name="create_admin"),
