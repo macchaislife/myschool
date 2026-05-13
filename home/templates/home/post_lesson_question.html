@@ -2,189 +2,145 @@
 {% block content %}
 
 <style>
-body{
-    background:#f7f4f4;
+.page-wrap{
+    background:#f8f5f5;
+    min-height:100vh;
+    padding:30px 15px;
 }
 
-.question-wrapper{
-    max-width:700px;
-    margin:30px auto;
+.question-card{
+    max-width:800px;
+    margin:auto;
     background:white;
-    border-radius:25px;
+    border-radius:28px;
     overflow:hidden;
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
     border:1px solid #eee;
-    box-shadow:0 4px 15px rgba(0,0,0,0.05);
 }
 
 .question-header{
-    padding:35px;
-    border-bottom:1px solid #eee;
-}
-
-.question-title-area{
+    padding:40px 30px;
+    border-bottom:1px solid #f0dede;
     display:flex;
     align-items:flex-start;
     gap:20px;
 }
 
-.question-icon{
-    width:70px;
-    height:70px;
-    background:#ff7a00;
+.icon-circle{
+    width:80px;
+    height:80px;
     border-radius:50%;
+    background:#ff6b00;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:34px;
     color:white;
+    font-size:34px;
     flex-shrink:0;
 }
 
-.question-title h1{
+.question-header h1{
     margin:0;
-    font-size:42px;
-    font-weight:800;
-    color:#222;
+    font-size:48px;
+    font-weight:700;
 }
 
-.question-title p{
-    margin-top:8px;
-    color:#888;
-    font-size:22px;
+.question-header p{
+    margin-top:10px;
+    color:#8a7b7b;
+    font-size:28px;
 }
 
-.question-body{
-    padding:35px;
+.form-area{
+    padding:35px 25px 45px;
 }
 
 .info-box{
-    background:#fff6ee;
-    border:2px solid #ffd3a8;
-    border-radius:20px;
-    padding:25px;
+    background:#fff8ef;
+    border:2px solid #f5d1a5;
+    border-radius:18px;
+    padding:22px;
     margin-bottom:35px;
 }
 
 .info-box h3{
-    margin-top:0;
-    color:#c95b00;
-    font-size:28px;
+    margin:0 0 12px;
+    color:#d95f00;
+    font-size:34px;
 }
 
 .info-box p{
-    color:#d46b1d;
-    font-size:20px;
+    margin:0;
+    color:#cc5d1d;
     line-height:1.8;
-    margin-bottom:0;
+    font-size:25px;
 }
 
 .form-group{
-    margin-bottom:30px;
+    margin-bottom:35px;
 }
 
-label{
+.form-group label{
     display:block;
     margin-bottom:12px;
-    font-size:28px;
+    font-size:32px;
     font-weight:700;
-    color:#222;
 }
 
 .required{
-    color:red;
+    color:#d40000;
 }
 
-input[type="text"],
-select,
-textarea{
+.input-box,
+.textarea-box,
+.select-box{
     width:100%;
-    padding:22px;
-    border:2px solid #eee;
-    border-radius:18px;
-    font-size:24px;
+    padding:20px;
+    border:2px solid #eadede;
+    border-radius:16px;
+    font-size:28px;
     box-sizing:border-box;
     background:white;
 }
 
-textarea{
+.textarea-box{
     min-height:180px;
-    resize:vertical;
+    resize:none;
 }
 
-.char-count{
+.counter{
     text-align:right;
     margin-top:8px;
-    color:#999;
-    font-size:20px;
+    color:#9c8d8d;
+    font-size:22px;
 }
 
 .anonymous-box{
     background:#fff3f3;
-    border-radius:20px;
-    padding:25px;
+    border-radius:18px;
+    padding:24px;
     display:flex;
     justify-content:space-between;
     align-items:center;
     margin-bottom:35px;
 }
 
-.anonymous-text h3{
+.anonymous-text h4{
     margin:0;
-    font-size:28px;
+    font-size:34px;
 }
 
 .anonymous-text p{
-    margin-top:8px;
-    color:#777;
-    font-size:20px;
+    margin:8px 0 0;
+    color:#8f7f7f;
+    font-size:24px;
 }
 
-.switch{
-    position:relative;
-    display:inline-block;
-    width:70px;
-    height:40px;
+.toggle{
+    transform:scale(2);
 }
 
-.switch input{
-    opacity:0;
-    width:0;
-    height:0;
-}
-
-.slider{
-    position:absolute;
-    cursor:pointer;
-    top:0;
-    left:0;
-    right:0;
-    bottom:0;
-    background:#ddd;
-    transition:.4s;
-    border-radius:40px;
-}
-
-.slider:before{
-    position:absolute;
-    content:"";
-    height:30px;
-    width:30px;
-    left:5px;
-    bottom:5px;
-    background:white;
-    transition:.4s;
-    border-radius:50%;
-}
-
-input:checked + .slider{
-    background:#ff7a00;
-}
-
-input:checked + .slider:before{
-    transform:translateX(30px);
-}
-
-.button-area{
+.button-row{
     display:flex;
     gap:20px;
 }
@@ -193,12 +149,12 @@ input:checked + .slider:before{
 .submit-btn{
     flex:1;
     padding:22px;
-    border:none;
-    border-radius:18px;
-    font-size:28px;
+    border-radius:16px;
+    font-size:30px;
     font-weight:700;
     cursor:pointer;
-    transition:0.2s;
+    text-align:center;
+    border:none;
 }
 
 .back-btn{
@@ -207,169 +163,156 @@ input:checked + .slider:before{
 }
 
 .submit-btn{
-    background:#ff7a00;
+    background:#ff6b00;
     color:white;
-}
-
-.back-btn:hover,
-.submit-btn:hover{
-    transform:translateY(-2px);
 }
 
 @media(max-width:768px){
 
-.question-wrapper{
-    margin:10px;
-}
+    .question-header h1{
+        font-size:28px;
+    }
 
-.question-title h1{
-    font-size:28px;
-}
+    .question-header p{
+        font-size:18px;
+    }
 
-.question-title p{
-    font-size:16px;
-}
+    .icon-circle{
+        width:60px;
+        height:60px;
+        font-size:25px;
+    }
 
-label{
-    font-size:22px;
-}
+    .form-group label{
+        font-size:24px;
+    }
 
-input[type="text"],
-select,
-textarea{
-    font-size:18px;
-    padding:16px;
-}
+    .input-box,
+    .textarea-box,
+    .select-box{
+        font-size:18px;
+    }
 
-.button-area{
-    flex-direction:column;
-}
+    .anonymous-text h4{
+        font-size:24px;
+    }
+
+    .anonymous-text p{
+        font-size:16px;
+    }
+
+    .submit-btn,
+    .back-btn{
+        font-size:22px;
+    }
+
+    .info-box h3{
+        font-size:24px;
+    }
+
+    .info-box p{
+        font-size:18px;
+    }
 }
 </style>
 
-<div class="question-wrapper">
+<div class="page-wrap">
 
-    <div class="question-header">
+    <div class="question-card">
 
-        <div class="question-title-area">
+        <div class="question-header">
+            <div class="icon-circle">📥</div>
 
-            <div class="question-icon">
-                📬
-            </div>
-
-            <div class="question-title">
-                <h1>質問箱に投稿する</h1>
+            <div>
+                <h1>意見箱に投稿する</h1>
                 <p>学校への質問・聞きたいことを投稿しましょう</p>
             </div>
-
         </div>
 
-    </div>
+        <div class="form-area">
 
-    <div class="question-body">
+            <div class="info-box">
+                <h3>📬 意見箱とは？</h3>
 
-        <div class="info-box">
-            <h3>📭 質問箱とは？</h3>
+                <p>
+                    学校に聞きたいことや、みんなで共有したい疑問を投稿できます。<br>
+                    管理者が確認して回答します。
+                </p>
+            </div>
 
-            <p>
-                学校に聞きたいことや、みんなで共有したい疑問を投稿できます。<br>
-                管理者が確認して回答します。
-            </p>
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>
+                        タイトル
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="title"
+                        maxlength="200"
+                        required
+                        class="input-box"
+                        placeholder="質問のタイトルを入力してください"
+                    >
+
+                    <div class="counter">0/200</div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        内容
+                        <span class="required">*</span>
+                    </label>
+
+                    <textarea
+                        name="content"
+                        required
+                        class="textarea-box"
+                        placeholder="質問の詳細を入力してください。具体的に書くほど回答しやすくなります。"
+                    ></textarea>
+                </div>
+
+                <div class="anonymous-box">
+
+                    <div class="anonymous-text">
+                        <h4>匿名で投稿する</h4>
+                        <p>オンにすると名前が表示されません</p>
+                    </div>
+
+                    <input
+                        type="checkbox"
+                        name="anonymous"
+                        class="toggle"
+                        checked
+                    >
+                </div>
+
+                <div class="button-row">
+
+                    <button
+                        type="button"
+                        class="back-btn"
+                        onclick="history.back()"
+                    >
+                        ← 戻る
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="submit-btn"
+                    >
+                        📥 投稿する
+                    </button>
+
+                </div>
+
+            </form>
+
         </div>
-
-        <form method="post">
-            {% csrf_token %}
-
-            <div class="form-group">
-
-                <label>
-                    教科
-                    <span class="required">*</span>
-                </label>
-
-                <select name="subject">
-
-                    <option value="math">数学</option>
-                    <option value="jp">国語</option>
-                    <option value="en">英語</option>
-                    <option value="sci">理科</option>
-                    <option value="soc">社会</option>
-                    <option value="other">その他</option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    タイトル
-                    <span class="required">*</span>
-                </label>
-
-                <input
-                    type="text"
-                    name="title"
-                    maxlength="200"
-                    placeholder="質問のタイトルを入力してください"
-                    required
-                >
-
-                <div class="char-count">
-                    0/200
-                </div>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    内容
-                    <span class="required">*</span>
-                </label>
-
-                <textarea
-                    name="content"
-                    placeholder="質問の詳細を入力してください。具体的に書くほど回答しやすくなります。"
-                    required
-                ></textarea>
-
-            </div>
-
-            <div class="anonymous-box">
-
-                <div class="anonymous-text">
-                    <h3>匿名で投稿する</h3>
-                    <p>オンにすると名前が表示されません</p>
-                </div>
-
-                <label class="switch">
-                    <input type="checkbox" name="anonymous" checked>
-                    <span class="slider"></span>
-                </label>
-
-            </div>
-
-            <div class="button-area">
-
-                <button
-                    type="button"
-                    class="back-btn"
-                    onclick="history.back()"
-                >
-                    ← 戻る
-                </button>
-
-                <button
-                    type="submit"
-                    class="submit-btn"
-                >
-                    📬 投稿する
-                </button>
-
-            </div>
-
-        </form>
 
     </div>
 
