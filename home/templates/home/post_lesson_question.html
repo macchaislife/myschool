@@ -1,33 +1,378 @@
 {% extends "home/base.html" %}
 {% block content %}
 
-<h2>授業への質問</h2>
+<style>
+body{
+    background:#f7f4f4;
+}
 
-<form method="post">
-    {% csrf_token %}
+.question-wrapper{
+    max-width:700px;
+    margin:30px auto;
+    background:white;
+    border-radius:25px;
+    overflow:hidden;
+    border:1px solid #eee;
+    box-shadow:0 4px 15px rgba(0,0,0,0.05);
+}
 
-    <label>教科</label><br>
-    <select name="subject">
-        <option value="math">数学</option>
-        <option value="jp">国語</option>
-        <option value="en">英語</option>
-        <option value="sci">理科</option>
-        <option value="soc">社会</option>
-        <option value="other">その他</option>
-    </select><br><br>
+.question-header{
+    padding:35px;
+    border-bottom:1px solid #eee;
+}
 
-    <label>タイトル</label><br>
-    <input type="text" name="title" required><br><br>
+.question-title-area{
+    display:flex;
+    align-items:flex-start;
+    gap:20px;
+}
 
-    <label>質問内容</label><br>
-    <textarea name="content" rows="5" required></textarea><br><br>
+.question-icon{
+    width:70px;
+    height:70px;
+    background:#ff7a00;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:34px;
+    color:white;
+    flex-shrink:0;
+}
 
-    <label>
-        <input type="checkbox" name="anonymous" checked>
-        匿名で投稿する
-    </label><br><br>
+.question-title h1{
+    margin:0;
+    font-size:42px;
+    font-weight:800;
+    color:#222;
+}
 
-    <button type="submit">送信</button>
-</form>
+.question-title p{
+    margin-top:8px;
+    color:#888;
+    font-size:22px;
+}
+
+.question-body{
+    padding:35px;
+}
+
+.info-box{
+    background:#fff6ee;
+    border:2px solid #ffd3a8;
+    border-radius:20px;
+    padding:25px;
+    margin-bottom:35px;
+}
+
+.info-box h3{
+    margin-top:0;
+    color:#c95b00;
+    font-size:28px;
+}
+
+.info-box p{
+    color:#d46b1d;
+    font-size:20px;
+    line-height:1.8;
+    margin-bottom:0;
+}
+
+.form-group{
+    margin-bottom:30px;
+}
+
+label{
+    display:block;
+    margin-bottom:12px;
+    font-size:28px;
+    font-weight:700;
+    color:#222;
+}
+
+.required{
+    color:red;
+}
+
+input[type="text"],
+select,
+textarea{
+    width:100%;
+    padding:22px;
+    border:2px solid #eee;
+    border-radius:18px;
+    font-size:24px;
+    box-sizing:border-box;
+    background:white;
+}
+
+textarea{
+    min-height:180px;
+    resize:vertical;
+}
+
+.char-count{
+    text-align:right;
+    margin-top:8px;
+    color:#999;
+    font-size:20px;
+}
+
+.anonymous-box{
+    background:#fff3f3;
+    border-radius:20px;
+    padding:25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:35px;
+}
+
+.anonymous-text h3{
+    margin:0;
+    font-size:28px;
+}
+
+.anonymous-text p{
+    margin-top:8px;
+    color:#777;
+    font-size:20px;
+}
+
+.switch{
+    position:relative;
+    display:inline-block;
+    width:70px;
+    height:40px;
+}
+
+.switch input{
+    opacity:0;
+    width:0;
+    height:0;
+}
+
+.slider{
+    position:absolute;
+    cursor:pointer;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background:#ddd;
+    transition:.4s;
+    border-radius:40px;
+}
+
+.slider:before{
+    position:absolute;
+    content:"";
+    height:30px;
+    width:30px;
+    left:5px;
+    bottom:5px;
+    background:white;
+    transition:.4s;
+    border-radius:50%;
+}
+
+input:checked + .slider{
+    background:#ff7a00;
+}
+
+input:checked + .slider:before{
+    transform:translateX(30px);
+}
+
+.button-area{
+    display:flex;
+    gap:20px;
+}
+
+.back-btn,
+.submit-btn{
+    flex:1;
+    padding:22px;
+    border:none;
+    border-radius:18px;
+    font-size:28px;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.back-btn{
+    background:white;
+    border:2px solid #ddd;
+}
+
+.submit-btn{
+    background:#ff7a00;
+    color:white;
+}
+
+.back-btn:hover,
+.submit-btn:hover{
+    transform:translateY(-2px);
+}
+
+@media(max-width:768px){
+
+.question-wrapper{
+    margin:10px;
+}
+
+.question-title h1{
+    font-size:28px;
+}
+
+.question-title p{
+    font-size:16px;
+}
+
+label{
+    font-size:22px;
+}
+
+input[type="text"],
+select,
+textarea{
+    font-size:18px;
+    padding:16px;
+}
+
+.button-area{
+    flex-direction:column;
+}
+}
+</style>
+
+<div class="question-wrapper">
+
+    <div class="question-header">
+
+        <div class="question-title-area">
+
+            <div class="question-icon">
+                📬
+            </div>
+
+            <div class="question-title">
+                <h1>質問箱に投稿する</h1>
+                <p>学校への質問・聞きたいことを投稿しましょう</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="question-body">
+
+        <div class="info-box">
+            <h3>📭 質問箱とは？</h3>
+
+            <p>
+                学校に聞きたいことや、みんなで共有したい疑問を投稿できます。<br>
+                管理者が確認して回答します。
+            </p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                <label>
+                    教科
+                    <span class="required">*</span>
+                </label>
+
+                <select name="subject">
+
+                    <option value="math">数学</option>
+                    <option value="jp">国語</option>
+                    <option value="en">英語</option>
+                    <option value="sci">理科</option>
+                    <option value="soc">社会</option>
+                    <option value="other">その他</option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    タイトル
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    name="title"
+                    maxlength="200"
+                    placeholder="質問のタイトルを入力してください"
+                    required
+                >
+
+                <div class="char-count">
+                    0/200
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    内容
+                    <span class="required">*</span>
+                </label>
+
+                <textarea
+                    name="content"
+                    placeholder="質問の詳細を入力してください。具体的に書くほど回答しやすくなります。"
+                    required
+                ></textarea>
+
+            </div>
+
+            <div class="anonymous-box">
+
+                <div class="anonymous-text">
+                    <h3>匿名で投稿する</h3>
+                    <p>オンにすると名前が表示されません</p>
+                </div>
+
+                <label class="switch">
+                    <input type="checkbox" name="anonymous" checked>
+                    <span class="slider"></span>
+                </label>
+
+            </div>
+
+            <div class="button-area">
+
+                <button
+                    type="button"
+                    class="back-btn"
+                    onclick="history.back()"
+                >
+                    ← 戻る
+                </button>
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                >
+                    📬 投稿する
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 
 {% endblock %}
