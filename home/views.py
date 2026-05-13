@@ -85,17 +85,20 @@ def post_opinion(request):
             category=request.POST.get("category"),
             title=request.POST.get("title"),
             content=request.POST.get("content"),
-            image=request.FILES.get("image"),
             is_anonymous=bool(request.POST.get("anonymous")),
         )
 
-        return redirect("thanks")
+        return redirect("opinion_thanks")
+        
 
     return render(request, "home/post_opinion.html")
 
 
 def thanks(request):
     return render(request, "home/thanks.html")
+
+def opinion_thanks(request):
+    return render(request, "home/opinion_thanks.html")
 
 
 def opinion_list(request):

@@ -18,6 +18,7 @@ urlpatterns = [
 
     # 意見投稿
     path("opinion/post/", views.post_opinion, name="post_opinion"),
+    path("opinion/thanks/", views.opinion_thanks, name="opinion_thanks"),
 
     # 授業質問
     path("lesson/question/", views.post_lesson_question, name="post_lesson_question"),
