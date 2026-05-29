@@ -336,25 +336,16 @@ def survey_results(request, survey_id):
 # 授業への質問
 # =====================================================
 def post_lesson_question(request):
-
-    student_id = request.session.get("student_id")
-
-    if not student_id:
-        return redirect("login_student")
-
-    student = StudentID.objects.filter(
-        id=student_id
-    ).first()
-
     if request.method == "POST":
+        title = request.POST.get("title")
+        content = request.POST.get("content")
+        anonymous = request.POST.get("anonymous") == "on"
 
         LessonQuestion.objects.create(
-            student=None if request.POST.get("anonymous") else student,
-            category=request.POST.get("category"),
-            subject=request.POST.get("subject"),
-            title=request.POST.get("title"),
-            content=request.POST.get("content"),
-            is_anonymous=bool(request.POST.get("anonymous")),
+            title=title,
+            content=content,
+            anonymous=anonymous,
+            subject="その他"
         )
 
         return redirect("lesson_question_list")
