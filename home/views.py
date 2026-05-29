@@ -339,12 +339,10 @@ def post_lesson_question(request):
     if request.method == "POST":
         title = request.POST.get("title")
         content = request.POST.get("content")
-        anonymous = request.POST.get("anonymous") == "on"
 
         LessonQuestion.objects.create(
             title=title,
             content=content,
-            anonymous=anonymous,
             subject="その他"
         )
 
