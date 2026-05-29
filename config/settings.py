@@ -91,4 +91,5 @@ SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SAMESITE = "Lax"
 
+LOGIN_REDIRECT_URL = "/teacher/dashboard/"
 LOGIN_URL = "/teacher/login/"
