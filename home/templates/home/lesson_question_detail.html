@@ -9,26 +9,44 @@
 <p>{{ question.content }}</p>
 
 <hr>
+
 {% if user.is_staff %}
-    <form method="post">
-        {% csrf_token %}
-        <label>先生の回答</label><br>
-        <textarea name="answer" rows="6" style="width:100%;">{{ question.answer }}</textarea>
-        <br><br>
-        button type="submit">回答を保存</button>
-    </form>
+<form method="post">
+    {% csrf_token %}
+
+    <label><strong>先生の回答</strong></label><br>
+
+    <textarea
+        name="answer"
+        rows="6"
+        style="width:100%;"
+    >{{ question.answer }}</textarea>
+
+    <br><br>
+
+    <button type="submit">
+        回答を保存
+    </button>
+</form>
+
 {% else %}
-    <p style="color: gray;">※ 回答は先生のみ可能です</p>
+
+<p style="color:gray;">
+    ※ 回答は先生のみ可能です
+</p>
+
 {% endif %}
 
-{% if q.is_answered %}
-    <span style="color: green; font-weight: bold;">
-        ✔ 回答済み
-    </span>
+<hr>
+
+{% if question.is_answered %}
+<span style="color:green;font-weight:bold;">
+    ✔ 回答済み
+</span>
 {% else %}
-    <span style="color: orange;">
-        ⏳ 未回答
-    </span>
+<span style="color:orange;font-weight:bold;">
+    ⏳ 未回答
+</span>
 {% endif %}
 
 {% endblock %}
