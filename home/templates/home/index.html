@@ -8,23 +8,46 @@
         <h1>SSボックス</h1>
         <p>学校への意見・質問を気軽に投稿しよう</p>
 
-        <a href="{% url 'post_opinion' %}" class="btn-main">意見を投稿する</a><br>
-        <a href="{% url 'post_lesson_question' %}" class="btn-sub">質問を投稿する</a>
+        <a href="{% url 'post_opinion' %}" class="btn-main">
+            意見を投稿する
+        </a>
+        <br>
+
+        <a href="{% url 'post_lesson_question' %}" class="btn-sub">
+            質問を投稿する
+        </a>
     </div>
 
     <!-- グリッド -->
     <div class="grid">
-        <a href="{% url 'post_opinion' %}" class="grid-item red">意見投稿</a>
-        <a href="{% url 'opinion_admin_list' %}" class="grid-item orange">意見箱</a>
-        <a href="{% url 'survey_list' %}" class="grid-item green">みんなで改善</a>
-        <a href="{% url 'teacher_dashboard' %}" class="grid-item blue">声を届ける</a>
+
+        <a href="{% url 'post_opinion' %}" class="grid-item red">
+            意見投稿
+        </a>
+
+        <a href="{% url 'opinion_list' %}" class="grid-item orange">
+            意見箱
+        </a>
+
+        <a href="{% url 'survey_list' %}" class="grid-item green">
+            みんなで改善
+        </a>
+
+        <a href="{% url 'lesson_question_list' %}" class="grid-item blue">
+            声を届ける
+        </a>
+
     </div>
 
     <!-- 最新の意見 -->
     <div class="section">
+
         <div class="section-header">
             <h3>最新の意見</h3>
-            <a href="{% url 'opinion_admin_list' %}" class="more">もっと見る →</a>
+
+            <a href="{% url 'opinion_list' %}" class="more">
+                もっと見る →
+            </a>
         </div>
 
         {% if surveys %}
@@ -32,24 +55,36 @@
                 <p>{{ survey.title }}</p>
             {% endfor %}
         {% else %}
-        <div class="empty-box">
-            <p>まだ意見がありません</p>
-            <a href="{% url 'post_opinion' %}" class="btn-main">最初の意見を投稿する</a>
-        </div>
+            <div class="empty-box">
+                <p>まだ意見がありません</p>
+
+                <a href="{% url 'post_opinion' %}" class="btn-main">
+                    最初の意見を投稿する
+                </a>
+            </div>
         {% endif %}
+
     </div>
 
     <!-- 質問 -->
     <div class="section">
+
         <div class="section-header">
             <h3>意見箱（質問）</h3>
-            <a href="{% url 'post_lesson_question' %}" class="more">もっと見る →</a>
+
+            <a href="{% url 'lesson_question_list' %}" class="more">
+                もっと見る →
+            </a>
         </div>
 
         <div class="empty-box">
             <p>まだ質問がありません</p>
-            <a href="{% url 'post_lesson_question' %}" class="btn-sub">最初の質問を投稿する</a>
+
+            <a href="{% url 'post_lesson_question' %}" class="btn-sub">
+                最初の質問を投稿する
+            </a>
         </div>
+
     </div>
 
 </div>
