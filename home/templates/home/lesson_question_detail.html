@@ -39,14 +39,14 @@
 
 <hr>
 
-{% if question.is_answered %}
-<span style="color:green;font-weight:bold;">
-    ✔ 回答済み
-</span>
+{% if q.is_answered %}
+    <span style="color: green; font-weight: bold;">
+        ✔ 回答済み
+    </span>
 {% else %}
-<span style="color:orange;font-weight:bold;">
-    ⏳ 未回答
-</span>
+    <span style="color: orange;">
+        ⏳ 未回答
+    </span>
 {% endif %}
 
 {% endblock %}

@@ -173,14 +173,22 @@ class LessonQuestion(models.Model):
         null=True,
         blank=True
     )
+
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     subject = models.CharField(max_length=100)
+
     title = models.CharField(max_length=200)
     content = models.TextField()
+
     answer = models.TextField(blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     answered_at = models.DateTimeField(null=True, blank=True)
+
     is_anonymous = models.BooleanField(default=False)
+
+    # 追加
+    is_answered = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
