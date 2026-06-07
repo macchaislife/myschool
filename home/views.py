@@ -412,6 +412,9 @@ def lesson_question_detail(
         question.answer = request.POST.get("answer")
         question.answered_at = timezone.now()
 
+        # 回答済みにする
+        question.is_answered = True
+
         question.save()
 
         return redirect("teacher_dashboard")
@@ -423,7 +426,6 @@ def lesson_question_detail(
             "question": question
         }
     )
-
 
 # =====================================================
 # 管理者ダッシュボード
