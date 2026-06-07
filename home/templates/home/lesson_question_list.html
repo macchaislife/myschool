@@ -6,9 +6,6 @@
 {% for q in questions %}
 <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
 
-    <!-- ★カテゴリ表示を追加 -->
-    <strong>[{{ q.get_category_display }}]</strong><br>
-
     <strong>{{ q.title }}</strong>
     <p>{{ q.content }}</p>
 
@@ -28,3 +25,5 @@
 {% empty %}
 <p>質問はまだありません。</p>
 {% endfor %}
+
+{% endblock %}
