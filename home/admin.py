@@ -105,3 +105,28 @@ class SurveyAnswerAdmin(admin.ModelAdmin):
 class ChoiceAdmin(admin.ModelAdmin):
     list_display = ("text", "question")
     list_filter = ("question",)
+
+
+# ------------------------------
+# LessonQuestion（授業への質問）
+# ------------------------------
+@admin.register(LessonQuestion)
+class LessonQuestionAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "subject",
+        "is_answered",
+        "created_at",
+    )
+
+    list_filter = (
+        "subject",
+        "is_answered",
+    )
+
+    search_fields = (
+        "title",
+        "content",
+    )
+
+    ordering = ("-created_at",)
