@@ -381,7 +381,7 @@ def lesson_question_student_detail(
 
     return render(
         request,
-        "home/lesson_question_detail.html",
+        "home/lesson_question_detail_student.html",
         {
             "question": question
         }
