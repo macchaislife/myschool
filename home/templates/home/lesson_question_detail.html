@@ -39,7 +39,7 @@
 
 <hr>
 
-{% if q.is_answered %}
+{% if question.is_answered %}
     <span style="color: green; font-weight: bold;">
         ✔ 回答済み
     </span>
@@ -48,5 +48,3 @@
         ⏳ 未回答
     </span>
 {% endif %}
-
-{% endblock %}
