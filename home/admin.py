@@ -7,6 +7,7 @@ from .models import (
     SurveyQuestion,
     SurveyAnswer,
     Choice,
+    LessonQuestion,
 )
 
 # ------------------------------
