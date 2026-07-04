@@ -187,7 +187,6 @@ class LessonQuestion(models.Model):
 
     is_anonymous = models.BooleanField(default=False)
 
-    # 追加
     is_answered = models.BooleanField(default=False)
 
     def __str__(self):

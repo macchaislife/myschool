@@ -1,29 +1,44 @@
 {% extends "home/base.html" %}
 {% block content %}
 
-<h2>授業への質問一覧</h2>
+<h2>みんなの質問</h2>
 
-{% for q in questions %}
-<div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+{% if questions %}
+    {% for question in questions %}
 
-    <strong>{{ q.title }}</strong>
-    <p>{{ q.content }}</p>
+        <div style="
+            background:white;
+            padding:20px;
+            margin-bottom:15px;
+            border-radius:10px;
+        ">
 
-    {% if q.student %}
-        <small>
-            {{ q.student.grade }}年{{ q.student.class_num }}組
-        </small>
-    {% else %}
-        <small>匿名</small>
-    {% endif %}
+            <h3>
+                <a href="{% url 'lesson_question_student_detail' question.id %}">
+                    {{ question.title }}
+                </a>
+            </h3>
 
-    <br>
-    <a href="{% url 'lesson_question_detail' q.id %}">
-        詳細を見る
-    </a>
-</div>
-{% empty %}
-<p>質問はまだありません。</p>
-{% endfor %}
+            <p><strong>科目：</strong>{{ question.get_category_display }}</p>
+
+            {% if question.is_answered %}
+                <span style="color:green;">
+                    ✔ 回答済み
+                </span>
+            {% else %}
+                <span style="color:orange;">
+                    ⏳ 未回答
+                </span>
+            {% endif %}
+
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>まだ質問はありません。</p>
+
+{% endif %}
 
 {% endblock %}
