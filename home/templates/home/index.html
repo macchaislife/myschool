@@ -83,7 +83,11 @@
 
         {% for question in questions %}
             <div class="empty-box">
-                <h4>{{ question.title }}</h4>
+                <h4>
+                    <a href="{% url 'lesson_question_student_detail' question.id %}">
+                        {{ question.title }}
+                    </a>
+                </h4>
 
                 {% if question.is_answered %}
                     <span style="color:green;">✔ 回答済み</span>
