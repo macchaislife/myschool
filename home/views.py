@@ -28,7 +28,17 @@ def index(request):
     if not request.session.get("student_id"):
         return redirect("login_student")
 
-    return render(request, "home/index.html")
+    opinions = Opinion.objects.order_by("-created_at")[:5]
+    questions = LessonQuestion.objects.order_by("-created_at")[:5]
+
+    return render(
+        request,
+        "home/index.html",
+        {
+            "opinions": opinions,
+            "questions": questions,
+        }
+    )
 
 
 def about(request):

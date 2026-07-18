@@ -50,10 +50,15 @@
             </a>
         </div>
 
-        {% if surveys %}
-            {% for survey in surveys %}
-                <p>{{ survey.title }}</p>
+        {% if opinions %}
+
+            {% for opinion in opinions %}
+                <div class="empty-box">
+                    <h4>{{ opinion.title }}</h4>
+                    <p>{{ opinion.content|truncatechars:80 }}</p>
+                </div>
             {% endfor %}
+
         {% else %}
             <div class="empty-box">
                 <p>まだ意見がありません</p>
@@ -67,26 +72,37 @@
     </div>
 
     <!-- 質問 -->
-    <div class="section">
+    <!-- 質問 -->
+<div class="section">
+    <div class="section-header">
+        <h3>意見箱（質問）</h3>
+        <a href="{% url 'lesson_question_list' %}" class="more">もっと見る →</a>
+    </div>
 
-        <div class="section-header">
-            <h3>意見箱（質問）</h3>
+    {% if questions %}
 
-            <a href="{% url 'lesson_question_list' %}" class="more">
-                もっと見る →
-            </a>
-        </div>
+        {% for question in questions %}
+            <div class="empty-box">
+                <h4>{{ question.title }}</h4>
+
+                {% if question.is_answered %}
+                    <span style="color:green;">✔ 回答済み</span>
+                {% else %}
+                    <span style="color:orange;">⏳ 未回答</span>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+    {% else %}
 
         <div class="empty-box">
             <p>まだ質問がありません</p>
-
-            <a href="{% url 'post_lesson_question' %}" class="btn-sub">
+            <a href="{% url 'post_lesson_question' %}" class="btn-outline">
                 最初の質問を投稿する
             </a>
         </div>
 
-    </div>
-
+    {% endif %}
 </div>
 
 {% endblock %}
