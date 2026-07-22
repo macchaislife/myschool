@@ -16,12 +16,12 @@
 
     <!-- 投稿者情報 -->
     {% if opinion.student %}
-        <p><strong>投稿者：</strong>
-            {{ opinion.student.grade }}年{{ opinion.student.class_num }}組
-            （コード：{{ opinion.student.code }}）
+        <p>
+            <strong>投稿者：</strong>
+            {{ grade }}年{{ class_num }}組{{ number }}番
         </p>
     {% else %}
-        <p><strong>投稿者：</strong> 匿名</p>
+        <p><strong>投稿者：</strong>匿名</p>
     {% endif %}
 
     <p><strong>投稿日時：</strong> {{ opinion.created_at }}</p>

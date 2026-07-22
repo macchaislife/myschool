@@ -143,11 +143,24 @@ def opinion_detail(request, opinion_id):
         id=opinion_id
     )
 
+    grade = class_num = number = None
+
+    if opinion.student:
+        parts = opinion.student.student_id.split("-")
+
+        if len(parts) == 3:
+            grade = parts[0]
+            class_num = parts[1]
+            number = parts[2]
+
     return render(
         request,
         "home/opinion_detail.html",
         {
-            "opinion": opinion
+            "opinion": opinion,
+            "grade": grade,
+            "class_num": class_num,
+            "number": number,
         }
     )
 
