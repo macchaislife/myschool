@@ -90,6 +90,18 @@ def post_opinion(request):
 
     if request.method == "POST":
 
+        last = Opinion.objects.filter(
+            student=student
+        ).order_by("-created_at").first()
+
+        if last:
+            if (
+                last.title == request.POST.get("title")
+                and last.content == request.POST.get("content")
+                and last.category == request.POST.get("category")
+            ):
+                return redirect("opinion_thanks")
+
         Opinion.objects.create(
             student=None if request.POST.get("anonymous") else student,
             category=request.POST.get("category"),
