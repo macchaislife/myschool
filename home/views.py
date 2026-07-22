@@ -127,6 +127,20 @@ def opinion_list(request):
 
     opinions = Opinion.objects.all().order_by("-created_at")
 
+    for opinion in opinions:
+
+        opinion.grade = None
+        opinion.class_num = None
+        opinion.number = None
+
+        if opinion.student:
+            parts = opinion.student.student_id.split("-")
+
+            if len(parts) == 3:
+                opinion.grade = parts[0]
+                opinion.class_num = parts[1]
+                opinion.number = parts[2]
+
     return render(
         request,
         "home/opinion_list.html",
@@ -138,16 +152,12 @@ def opinion_list(request):
 
 def opinion_detail(request, opinion_id):
 
-    opinion = get_object_or_404(
-        Opinion,
-        id=opinion_id
-    )
+    opinion = get_object_or_404(Opinion, id=opinion_id)
 
     grade = class_num = number = None
 
     if opinion.student:
         parts = opinion.student.student_id.split("-")
-
         if len(parts) == 3:
             grade = parts[0]
             class_num = parts[1]

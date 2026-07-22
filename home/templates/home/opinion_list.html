@@ -32,8 +32,14 @@
         <!-- ここに学年・クラス追加！ -->
         {% if opinion.student %}
             <small>
-                {{ opinion.student.grade }}年{{ opinion.student.class_num }}組  
-                （コード：{{ opinion.student.code }}）
+                {% if opinion.student %}
+                    <p>
+                        <strong>投稿者：</strong>
+                        {{ opinion.grade }}年{{ opinion.class_num }}組{{ opinion.number }}番
+                    </p>
+                {% else %}
+                    <p><strong>投稿者：</strong>匿名</p>
+                {% endif %}
             </small><br>
         {% endif %}
 
