@@ -1,45 +1,90 @@
-{% extends "home/base.html" %}
-{% block content %}
+<hr>
 
-<h2>投稿詳細</h2>
+<h3>💬 コメント</h3>
 
-<div style="border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
+{% for comment in comments %}
 
-    <h3>{{ opinion.get_category_display }}</h3>
-    <p>{{ opinion.content }}</p>
+    <div style="
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        background: #f9f9f9;
+    ">
 
-    {% if opinion.image %}
-        <img src="{{ opinion.image.url }}" alt="投稿画像" width="300" style="margin-top: 10px;">
-    {% endif %}
-
-    <hr>
-
-    <!-- 投稿者情報 -->
-    {% if opinion.student %}
         <p>
             <strong>投稿者：</strong>
-            {{ grade }}年{{ class_num }}組{{ number }}番
+
+            {% if comment.student %}
+                {{ comment.grade }}年{{ comment.class_num }}組{{ comment.number }}番
+            {% else %}
+                匿名
+            {% endif %}
         </p>
-    {% else %}
-        <p><strong>投稿者：</strong>匿名</p>
-    {% endif %}
 
-    <p><strong>投稿日時：</strong> {{ opinion.created_at }}</p>
-    <hr>
+        <p>{{ comment.content }}</p>
 
-    <div>
-        <form method="post" action="{% url 'opinion_like' opinion.id %}">
-            {% csrf_token %}
+        <small>
+            {{ comment.created_at }}
+        </small>
 
-            <button type="submit">
-                👍 いいね
-            </button>
-
-            <span>
-                {{ opinion.likes.count }}件
-            </span>
-        </form>
     </div>
+
+{% empty %}
+
+    <p>まだコメントはありません。</p>
+
+{% endfor %}
+
+
+<!-- コメント投稿 -->
+
+<div style="
+    margin-top: 20px;
+    padding: 15px;
+    background: #f5f6fa;
+    border-radius: 10px;
+">
+
+    <h4>コメントする</h4>
+
+    <form method="post"
+          action="{% url 'opinion_comment' opinion.id %}">
+
+        {% csrf_token %}
+
+        <textarea
+            name="content"
+            rows="4"
+            placeholder="コメントを入力してください"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                resize: vertical;
+            "
+        ></textarea>
+
+        <button
+            type="submit"
+            style="
+                margin-top: 10px;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 8px;
+                background: #2f5d50;
+                color: white;
+                cursor: pointer;
+            "
+        >
+            コメントする
+        </button>
+
+    </form>
+
 </div>
 
 <br>

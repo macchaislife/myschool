@@ -153,16 +153,38 @@ def opinion_list(request):
 
 def opinion_detail(request, opinion_id):
 
-    opinion = get_object_or_404(Opinion, id=opinion_id)
+    opinion = get_object_or_404(
+        Opinion,
+        id=opinion_id
+    )
 
+    # 意見投稿者
     grade = class_num = number = None
 
     if opinion.student:
         parts = opinion.student.student_id.split("-")
+
         if len(parts) == 3:
             grade = parts[0]
             class_num = parts[1]
             number = parts[2]
+
+    # コメント投稿者
+    comments = opinion.comments.all().order_by("created_at")
+
+    for comment in comments:
+
+        comment.grade = None
+        comment.class_num = None
+        comment.number = None
+
+        if comment.student:
+            parts = comment.student.student_id.split("-")
+
+            if len(parts) == 3:
+                comment.grade = parts[0]
+                comment.class_num = parts[1]
+                comment.number = parts[2]
 
     return render(
         request,
@@ -172,6 +194,7 @@ def opinion_detail(request, opinion_id):
             "grade": grade,
             "class_num": class_num,
             "number": number,
+            "comments": comments,
         }
     )
 
@@ -554,3 +577,48 @@ def create_admin(request):
         return HttpResponse("admin created")
 
     return HttpResponse("already exists")
+
+def opinion_comment(request, opinion_id):
+
+    if request.method != "POST":
+        return redirect(
+            "opinion_detail",
+            opinion_id=opinion_id
+        )
+
+    student_id = request.session.get("student_id")
+
+    if not student_id:
+        return redirect("login_student")
+
+    student = StudentID.objects.filter(
+        id=student_id
+    ).first()
+
+    if not student:
+        return redirect("login_student")
+
+    opinion = get_object_or_404(
+        Opinion,
+        id=opinion_id
+    )
+
+    content = request.POST.get("content", "").strip()
+
+    if not content:
+        return redirect(
+            "opinion_detail",
+            opinion_id=opinion_id
+        )
+
+    OpinionComment.objects.create(
+        opinion=opinion,
+        student=student,
+        content=content,
+        is_anonymous=False,
+    )
+
+    return redirect(
+        "opinion_detail",
+        opinion_id=opinion_id
+    )

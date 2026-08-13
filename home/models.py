@@ -106,6 +106,29 @@ class OpinionLike(models.Model):
 
     def __str__(self):
         return f"{self.student} → {self.opinion}"
+    
+class OpinionComment(models.Model):
+    opinion = models.ForeignKey(
+        Opinion,
+        on_delete=models.CASCADE,
+        related_name="comments"
+    )
+
+    student = models.ForeignKey(
+        StudentID,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    content = models.TextField()
+
+    is_anonymous = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.content[:30]
 
 
 # =========================

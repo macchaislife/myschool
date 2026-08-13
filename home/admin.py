@@ -3,6 +3,7 @@ from .models import (
     StudentID,
     StudentEnrollment,
     Opinion,
+    OpinionComment,
     Survey,
     SurveyQuestion,
     SurveyAnswer,
@@ -55,6 +56,32 @@ class OpinionAdmin(admin.ModelAdmin):
     list_display = ("student", "category", "created_at")
     list_filter = ("category",)
     search_fields = ("content", "student__student_id")
+    ordering = ("-created_at",)
+
+# ------------------------------
+# OpinionComment（意見へのコメント）
+# ------------------------------
+@admin.register(OpinionComment)
+class OpinionCommentAdmin(admin.ModelAdmin):
+    list_display = (
+        "opinion",
+        "student",
+        "content",
+        "is_anonymous",
+        "created_at",
+    )
+
+    list_filter = (
+        "is_anonymous",
+        "created_at",
+    )
+
+    search_fields = (
+        "content",
+        "student__student_id",
+        "opinion__title",
+    )
+
     ordering = ("-created_at",)
 
 
