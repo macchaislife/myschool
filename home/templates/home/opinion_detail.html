@@ -25,6 +25,21 @@
     {% endif %}
 
     <p><strong>投稿日時：</strong> {{ opinion.created_at }}</p>
+    <hr>
+
+    <div>
+        <form method="post" action="{% url 'opinion_like' opinion.id %}">
+            {% csrf_token %}
+
+            <button type="submit">
+                👍 いいね
+            </button>
+
+            <span>
+                {{ opinion.likes.count }}件
+            </span>
+        </form>
+    </div>
 </div>
 
 <br>

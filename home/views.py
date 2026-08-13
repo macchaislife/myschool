@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import (
     Opinion,
+    OpinionLike,
     StudentID,
     Survey,
     SurveyQuestion,
@@ -432,6 +433,47 @@ def lesson_question_student_detail(
         }
     )
 
+def opinion_like(request, opinion_id):
+
+    if request.method != "POST":
+        return redirect("opinion_detail", opinion_id=opinion_id)
+
+    student_id = request.session.get("student_id")
+
+    if not student_id:
+        return redirect("login_student")
+
+    student = StudentID.objects.filter(
+        id=student_id
+    ).first()
+
+    if not student:
+        return redirect("login_student")
+
+    opinion = get_object_or_404(
+        Opinion,
+        id=opinion_id
+    )
+
+    like = OpinionLike.objects.filter(
+        opinion=opinion,
+        student=student
+    ).first()
+
+    if like:
+        # すでにいいねしていたら取り消す
+        like.delete()
+    else:
+        # まだいいねしていなければ追加
+        OpinionLike.objects.create(
+            opinion=opinion,
+            student=student
+        )
+
+    return redirect(
+        "opinion_detail",
+        opinion_id=opinion_id
+    )
 
 # =====================================================
 # 管理者専用 質問詳細

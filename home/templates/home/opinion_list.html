@@ -1,5 +1,6 @@
 {% extends "home/base.html" %}
 {% block content %}
+
 <h2>投稿一覧</h2>
 
 <style>
@@ -7,6 +8,7 @@
     text-decoration: none;
     color: inherit;
 }
+
 .card {
     border: 1px solid #ddd;
     padding: 15px;
@@ -14,40 +16,83 @@
     margin-bottom: 12px;
     transition: 0.2s;
 }
+
 .card:hover {
     transform: scale(1.01);
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    cursor:x pointer;
+    cursor: pointer;
+}
+
+.like-area {
+    margin-top: 10px;
+}
+
+.like-button {
+    padding: 7px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+}
+
+.like-count {
+    margin-left: 5px;
+    color: #555;
 }
 </style>
 
 {% for opinion in opinions %}
-<a href="{% url 'opinion_detail' opinion.id %}" class="card-link">
-    <div class="card">
+
+<div class="card">
+
+    <!-- カード本体 -->
+    <a href="{% url 'opinion_detail' opinion.id %}" class="card-link">
 
         <h4>{{ opinion.get_category_display }}</h4>
 
         <p>{{ opinion.content|truncatechars:50 }}</p>
 
-        <!-- ここに学年・クラス追加！ -->
+        <!-- 投稿者 -->
         {% if opinion.student %}
-            <small>
-                {% if opinion.student %}
-                    <p>
-                        <strong>投稿者：</strong>
-                        {{ opinion.grade }}年{{ opinion.class_num }}組{{ opinion.number }}番
-                    </p>
-                {% else %}
-                    <p><strong>投稿者：</strong>匿名</p>
-                {% endif %}
-            </small><br>
+            <p>
+                <strong>投稿者：</strong>
+                {{ opinion.grade }}年{{ opinion.class_num }}組{{ opinion.number }}番
+            </p>
+        {% else %}
+            <p>
+                <strong>投稿者：</strong>
+                匿名
+            </p>
         {% endif %}
 
         <small>{{ opinion.created_at }}</small>
+
+    </a>
+
+    <!-- いいね -->
+    <div class="like-area">
+
+        <form method="post" action="{% url 'opinion_like' opinion.id %}">
+            {% csrf_token %}
+
+            <button type="submit" class="like-button">
+                👍 いいね
+            </button>
+
+            <span class="like-count">
+                {{ opinion.likes.count }}件
+            </span>
+
+        </form>
+
     </div>
-</a>
+
+</div>
+
 {% empty %}
+
 <p>まだ投稿がありません。</p>
+
 {% endfor %}
 
 {% endblock %}

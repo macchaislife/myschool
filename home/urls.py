@@ -69,6 +69,12 @@ urlpatterns = [
             name="opinion_detail"
         ),
 
+        path(
+            "opinions/<int:opinion_id>/like/",
+            views.opinion_like,
+            name="opinion_like"
+        ),
+
         # =========================
         # 授業質問
         # =========================

@@ -82,6 +82,31 @@ class Opinion(models.Model):
     def __str__(self):
         return self.title
 
+class OpinionLike(models.Model):
+    opinion = models.ForeignKey(
+        Opinion,
+        on_delete=models.CASCADE,
+        related_name="likes"
+    )
+
+    student = models.ForeignKey(
+        StudentID,
+        on_delete=models.CASCADE
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["opinion", "student"],
+                name="unique_opinion_like"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.student} → {self.opinion}"
+
 
 # =========================
 # アンケート
