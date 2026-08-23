@@ -67,6 +67,23 @@
 
         <small>{{ opinion.created_at }}</small>
 
+        <div style="
+            margin-top: 10px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        ">
+
+            <span style="color:#e11d48;">
+                👍 {{ opinion.likes.count }}件
+            </span>
+
+            <span style="color:#2563eb;">
+                💬 {{ opinion.opinioncomment_set.count }}件
+            </span>
+
+        </div>
+
     </a>
 
     <!-- いいね -->

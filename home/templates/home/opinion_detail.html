@@ -1,93 +1,100 @@
+{% extends "home/base.html" %}
+{% block content %}
+
+<h2>投稿詳細</h2>
+
+<div style="border:1px solid #ddd; padding:20px; border-radius:10px;">
+
+    <h3>{{ opinion.get_category_display }}</h3>
+
+    <p>{{ opinion.content }}</p>
+
+    <hr>
+
+    {% if opinion.student %}
+        <p>
+            <strong>投稿者：</strong>
+            {{ grade }}年{{ class_num }}組{{ number }}番
+        </p>
+    {% else %}
+        <p><strong>投稿者：</strong>匿名</p>
+    {% endif %}
+
+    <p><strong>投稿日時：</strong>{{ opinion.created_at }}</p>
+
+    <p>
+        👍 {{ opinion.likes.count }}件　
+        💬 {{ opinion.comments.count }}件
+    </p>
+
+</div>
+
 <hr>
 
 <h3>💬 コメント</h3>
 
 {% for comment in comments %}
 
-    <div style="
-        border: 1px solid #ddd;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 10px;
-        background: #f9f9f9;
-    ">
-
-        <p>
-            <strong>投稿者：</strong>
-
-            {% if comment.student %}
-                {{ comment.grade }}年{{ comment.class_num }}組{{ comment.number }}番
-            {% else %}
-                匿名
-            {% endif %}
-        </p>
-
-        <p>{{ comment.content }}</p>
-
-        <small>
-            {{ comment.created_at }}
-        </small>
-
-    </div>
-
-{% empty %}
-
-    <p>まだコメントはありません。</p>
-
-{% endfor %}
-
-
-<!-- コメント投稿 -->
-
 <div style="
-    margin-top: 20px;
-    padding: 15px;
-    background: #f5f6fa;
-    border-radius: 10px;
+    border:1px solid #ddd;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:10px;
+    background:#f9f9f9;
 ">
 
-    <h4>コメントする</h4>
+    <p>
+        <strong>投稿者：</strong>
 
-    <form method="post"
-          action="{% url 'opinion_comment' opinion.id %}">
+        {% if comment.is_anonymous %}
+            匿名
+        {% else %}
+            {{ comment.grade }}年{{ comment.class_num }}組{{ comment.number }}番
+        {% endif %}
+    </p>
 
-        {% csrf_token %}
+    <p>{{ comment.content }}</p>
 
-        <textarea
-            name="content"
-            rows="4"
-            placeholder="コメントを入力してください"
-            required
-            style="
-                width: 100%;
-                box-sizing: border-box;
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 8px;
-                resize: vertical;
-            "
-        ></textarea>
-
-        <button
-            type="submit"
-            style="
-                margin-top: 10px;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 8px;
-                background: #2f5d50;
-                color: white;
-                cursor: pointer;
-            "
-        >
-            コメントする
-        </button>
-
-    </form>
+    <small>{{ comment.created_at }}</small>
 
 </div>
 
+{% empty %}
+
+<p>まだコメントはありません。</p>
+
+{% endfor %}
+
+<hr>
+
+<h3>コメントする</h3>
+
+<form method="post" action="{% url 'opinion_comment' opinion.id %}">
+    {% csrf_token %}
+
+    <textarea
+        name="content"
+        rows="4"
+        required
+        placeholder="コメントを入力してください"
+        style="
+            width:100%;
+            padding:10px;
+            border-radius:8px;
+            border:1px solid #ccc;
+        "
+    ></textarea>
+
+    <br><br>
+
+    <button type="submit">
+        コメントする
+    </button>
+
+</form>
+
 <br>
+
 <a href="{% url 'opinion_list' %}">← 一覧に戻る</a>
 
 {% endblock %}
