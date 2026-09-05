@@ -1,5 +1,6 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import (
+    generate_initial_password,
     StudentID,
     StudentEnrollment,
     Opinion,
@@ -20,22 +21,47 @@ class StudentIDAdmin(admin.ModelAdmin):
         "student_id",
         "number",
         "is_graduated",
+        "must_change_password",
         "created_at",
     )
 
     list_filter = (
         "is_graduated",
+        "must_change_password",
     )
 
     search_fields = ("student_id",)
     ordering = ("number",)
 
-    actions = ["mark_as_graduated"]
+    actions = ["mark_as_graduated", "reset_password"]
 
     def mark_as_graduated(self, request, queryset):
         queryset.update(is_graduated=True)
 
     mark_as_graduated.short_description = "選択した生徒を卒業にする"
+
+    def reset_password(self, request, queryset):
+        """
+        選択した生徒のパスワードをランダムな英数字で再発行する。
+        新しいパスワードは画面上に一度だけ表示されるので、
+        その場でメモして生徒に伝えること（DBには平文で残らない）。
+        """
+        lines = []
+
+        for student in queryset:
+            raw = generate_initial_password()
+            student.set_password(raw)
+            student.must_change_password = True
+            student.save()
+            lines.append(f"{student.student_id}: {raw}")
+
+        self.message_user(
+            request,
+            "新しいパスワード（この場限りの表示です）　" + " ／ ".join(lines),
+            level=messages.WARNING,
+        )
+
+    reset_password.short_description = "選択した生徒のパスワードを再発行する"
 
 
 # ------------------------------

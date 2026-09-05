@@ -1,7 +1,20 @@
 # models.py
 
+import secrets
+import string
+
 from django.db import models
+from django.contrib.auth.hashers import make_password, check_password as check_password_hash
 from django.contrib.auth.models import User
+
+
+def generate_initial_password(length=8):
+    """
+    ログイン用の初期パスワードをランダムな英数字で生成する。
+    secrets モジュールを使うことで推測されにくい値にしている。
+    """
+    alphabet = string.ascii_letters + string.digits
+    return "".join(secrets.choice(alphabet) for _ in range(length))
 
 
 # =========================
@@ -30,9 +43,36 @@ class StudentID(models.Model):
     is_graduated = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # ログイン用パスワード（ハッシュ化して保存する。平文は保存しない）
+    password = models.CharField(max_length=128, blank=True)
+
+    # True の間はログイン後にパスワード変更ページへ強制的に飛ばす
+    must_change_password = models.BooleanField(default=True)
+
+    # 直近の save() で新規発行した初期パスワード（平文）を一時的に保持する。
+    # DB には保存されない。呼び出し側が生成直後の1回だけ生徒に伝えるためのもの。
+    _raw_initial_password = None
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        if not self.password:
+            return False
+        return check_password_hash(raw_password, self.password)
+
     def save(self, *args, **kwargs):
         if not self.student_id:
             self.student_id = f"S{self.number:04d}"
+
+        # 新規作成で、まだパスワードが設定されていない場合のみ
+        # ランダムな初期パスワードを自動発行する。
+        if self._state.adding and not self.password:
+            raw = generate_initial_password()
+            self.set_password(raw)
+            self.must_change_password = True
+            self._raw_initial_password = raw
+
         super().save(*args, **kwargs)
 
     def __str__(self):

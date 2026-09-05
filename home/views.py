@@ -13,10 +13,8 @@ from .models import (
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import get_user_model
 from django.utils import timezone
-from django.http import HttpResponse, HttpResponseForbidden
-from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseForbidden
 
 import json
 
@@ -49,30 +47,95 @@ def about(request):
 # =====================================================
 # 生徒ログイン
 # =====================================================
-@csrf_exempt
 def login_student(request):
 
     if request.method == "POST":
 
-        code = request.POST.get("student_code")
+        code = request.POST.get("student_code", "").strip()
+        raw_password = request.POST.get("password", "")
 
         student = StudentID.objects.filter(
             student_id=code
         ).first()
 
-        if student:
+        # 生徒IDの存在有無を区別せず同じエラー文にする
+        # （他人の生徒IDが存在するかどうかを推測されないようにするため）
+        if student and student.check_password(raw_password):
             request.session["student_id"] = student.id
+
+            if student.must_change_password:
+                return redirect("change_student_password")
+
             return redirect("index")
 
         return render(
             request,
             "home/login.html",
             {
-                "error": "この生徒IDは存在しません。"
+                "error": "生徒コードまたはパスワードが正しくありません。"
             }
         )
 
     return render(request, "home/login.html")
+
+
+# =====================================================
+# 生徒パスワード変更
+# =====================================================
+def change_student_password(request):
+
+    student_id = request.session.get("student_id")
+
+    if not student_id:
+        return redirect("login_student")
+
+    student = StudentID.objects.filter(id=student_id).first()
+
+    if not student:
+        return redirect("login_student")
+
+    if request.method == "POST":
+
+        current_password = request.POST.get("current_password", "")
+        new_password = request.POST.get("new_password", "")
+        new_password_confirm = request.POST.get("new_password_confirm", "")
+
+        if not student.check_password(current_password):
+            return render(
+                request,
+                "home/change_password.html",
+                {"error": "現在のパスワードが正しくありません。"}
+            )
+
+        if new_password != new_password_confirm:
+            return render(
+                request,
+                "home/change_password.html",
+                {"error": "新しいパスワードが一致しません。"}
+            )
+
+        if len(new_password) < 8:
+            return render(
+                request,
+                "home/change_password.html",
+                {"error": "新しいパスワードは8文字以上にしてください。"}
+            )
+
+        student.set_password(new_password)
+        student.must_change_password = False
+        student.save()
+
+        return render(
+            request,
+            "home/change_password.html",
+            {"success": "パスワードを変更しました。"}
+        )
+
+    return render(
+        request,
+        "home/change_password.html",
+        {"force_change": student.must_change_password}
+    )
 
 
 # =====================================================
@@ -556,27 +619,6 @@ def teacher_dashboard(request):
         }
     )
 
-
-# =====================================================
-# 管理者作成（1回だけ）
-# =====================================================
-def create_admin(request):
-
-    User = get_user_model()
-
-    if not User.objects.filter(
-        username="admin"
-    ).exists():
-
-        User.objects.create_superuser(
-            username="admin",
-            email="admin@example.com",
-            password="20209304"
-        )
-
-        return HttpResponse("admin created")
-
-    return HttpResponse("already exists")
 
 def opinion_comment(request, opinion_id):
 

@@ -13,6 +13,12 @@ urlpatterns = [
         # =========================
         path("login/", views.login_student, name="login_student"),
 
+        path(
+            "password/change/",
+            views.change_student_password,
+            name="change_student_password"
+        ),
+
         # =========================
         # アンケート
         # =========================
@@ -132,14 +138,5 @@ urlpatterns = [
             "teacher/lesson-question/<int:question_id>/",
             views.lesson_question_detail,
             name="lesson_question_detail"
-        ),
-
-        # =========================
-        # 管理者作成
-        # =========================
-        path(
-            "create-admin/",
-            views.create_admin,
-            name="create_admin"
         ),
     ]
