@@ -59,7 +59,12 @@ class StudentID(models.Model):
     def check_password(self, raw_password):
         if not self.password:
             return False
-        return check_password_hash(raw_password, self.password)
+        try:
+            return check_password_hash(raw_password, self.password)
+        except (TypeError, ValueError):
+            # 平文のまま保存されているなど、想定外の値が入っていても
+            # エラーで落とさず「不一致」として扱う
+            return False
 
     def save(self, *args, **kwargs):
         if not self.student_id:

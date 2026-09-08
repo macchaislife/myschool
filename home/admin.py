@@ -33,7 +33,26 @@ class StudentIDAdmin(admin.ModelAdmin):
     search_fields = ("student_id",)
     ordering = ("number",)
 
+    # password は直接編集できないようにする（平文で保存される事故を防ぐため）。
+    # パスワードの設定・再発行は必ず下の「reset_password」アクションを使う。
+    fields = (
+        "user",
+        "number",
+        "student_id",
+        "is_graduated",
+        "password_status",
+        "must_change_password",
+    )
+
+    readonly_fields = ("password_status",)
+
     actions = ["mark_as_graduated", "reset_password"]
+
+    def password_status(self, obj):
+        if obj.pk and obj.password:
+            return "設定済み（変更する場合は一覧画面で選択して「パスワードを再発行する」を実行してください）"
+        return "未設定（保存すると自動でランダムなパスワードが発行されます）"
+    password_status.short_description = "パスワード"
 
     def mark_as_graduated(self, request, queryset):
         queryset.update(is_graduated=True)
