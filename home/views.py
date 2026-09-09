@@ -664,3 +664,13 @@ def opinion_comment(request, opinion_id):
         "opinion_detail",
         opinion_id=opinion_id
     )
+
+# =====================================================
+# 生徒ログアウト
+# =====================================================
+def logout_student(request):
+
+    if request.method == "POST":
+        request.session.flush()
+
+    return redirect("login_student")

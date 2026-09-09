@@ -108,6 +108,12 @@ urlpatterns = [
             name="lesson_question_student_detail"
         ),
 
+        path(
+            "logout/",
+            views.logout_student,
+            name="logout_student"
+        ),
+
         # =========================
         # 先生ログイン
         # =========================

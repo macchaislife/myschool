@@ -35,6 +35,109 @@
 
         .menu {
             font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* 右側から出てくるメニュー（ドロワー） */
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 100;
+        }
+
+        .drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 260px;
+            max-width: 80%;
+            background: white;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.2);
+            transform: translateX(100%);
+            transition: transform 0.25s ease;
+            z-index: 101;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+
+        .drawer-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .drawer-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .drawer-nav a {
+            padding: 12px 8px;
+            color: #333;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .drawer-nav a:hover {
+            background: #f5f6fa;
+        }
+
+        .drawer-logout-form {
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+        }
+
+        .drawer-logout-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: red;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .drawer-logout-btn:hover {
+            background: #c40000;
+        }
+
+        body.drawer-locked {
+            overflow: hidden;
         }
 
         /* コンテナ */
@@ -165,8 +268,32 @@
     <div class="logo">
         <a href="{% url 'index' %}">SSボックス</a>
     </div>
-    <div class="menu">☰</div>
+    <div class="menu" id="menuBtn" role="button" tabindex="0" aria-label="メニューを開く">☰</div>
 </div>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-header">
+        <span>メニュー</span>
+        <button class="drawer-close" id="drawerClose" aria-label="閉じる">×</button>
+    </div>
+
+    <nav class="drawer-nav">
+        <a href="{% url 'index' %}">ホーム</a>
+        <a href="{% url 'post_opinion' %}">意見を投稿する</a>
+        <a href="{% url 'opinion_list' %}">意見箱を見る</a>
+        <a href="{% url 'post_lesson_question' %}">授業に質問する</a>
+        <a href="{% url 'lesson_question_list' %}">質問一覧を見る</a>
+        <a href="{% url 'survey_list' %}">アンケート</a>
+        <a href="{% url 'change_student_password' %}">パスワード変更</a>
+    </nav>
+
+    <form method="POST" action="{% url 'logout_student' %}" class="drawer-logout-form">
+        {% csrf_token %}
+        <button type="submit" class="drawer-logout-btn">ログアウト</button>
+    </form>
+</aside>
 
 {% block content %}
 {% endblock %}
@@ -175,6 +302,47 @@
     <h3>SSボックス</h3>
     <p>佐賀商業高校 生徒向け掲示板</p>
 </div>
+
+<script>
+(function () {
+    var menuBtn = document.getElementById('menuBtn');
+    var drawer = document.getElementById('drawer');
+    var overlay = document.getElementById('drawerOverlay');
+    var closeBtn = document.getElementById('drawerClose');
+
+    function openDrawer() {
+        drawer.classList.add('open');
+        overlay.classList.add('open');
+        drawer.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('drawer-locked');
+    }
+
+    function closeDrawer() {
+        drawer.classList.remove('open');
+        overlay.classList.remove('open');
+        drawer.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('drawer-locked');
+    }
+
+    menuBtn.addEventListener('click', openDrawer);
+
+    menuBtn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openDrawer();
+        }
+    });
+
+    closeBtn.addEventListener('click', closeDrawer);
+    overlay.addEventListener('click', closeDrawer);
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeDrawer();
+        }
+    });
+})();
+</script>
 
 </body>
 </html>
