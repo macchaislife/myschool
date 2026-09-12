@@ -4,6 +4,7 @@ import secrets
 import string
 
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.hashers import make_password, check_password as check_password_hash
 from django.contrib.auth.models import User
 
@@ -48,6 +49,13 @@ class StudentID(models.Model):
 
     # True の間はログイン後にパスワード変更ページへ強制的に飛ばす
     must_change_password = models.BooleanField(default=True)
+
+    # この日時より前は投稿・コメント・いいねなどの操作を一時的に禁止する
+    # （通報を受けて管理者が一時停止させた場合に設定される）
+    suspended_until = models.DateTimeField(null=True, blank=True)
+
+    def is_suspended(self):
+        return bool(self.suspended_until and self.suspended_until > timezone.now())
 
     # 直近の save() で新規発行した初期パスワード（平文）を一時的に保持する。
     # DB には保存されない。呼び出し側が生成直後の1回だけ生徒に伝えるためのもの。
@@ -284,3 +292,63 @@ class LessonQuestion(models.Model):
 
     def __str__(self):
         return self.title
+
+
+# =========================
+# 通報
+# =========================
+class Report(models.Model):
+    TARGET_CHOICES = [
+        ("opinion", "意見"),
+        ("comment", "コメント"),
+        ("lesson_question", "授業への質問"),
+    ]
+
+    REASON_CHOICES = [
+        ("troll", "荒らし・嫌がらせ"),
+        ("abuse", "誹謗中傷"),
+        ("spam", "スパム・宣伝"),
+        ("other", "その他"),
+    ]
+
+    STATUS_CHOICES = [
+        ("pending", "未対応"),
+        ("reviewed", "対応済み"),
+    ]
+
+    reporter = models.ForeignKey(
+        StudentID,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reports_filed"
+    )
+
+    reported_student = models.ForeignKey(
+        StudentID,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reports_received"
+    )
+
+    target_type = models.CharField(max_length=20, choices=TARGET_CHOICES)
+    target_id = models.PositiveIntegerField()
+
+    reason = models.CharField(
+        max_length=20,
+        choices=REASON_CHOICES,
+        default="other"
+    )
+    detail = models.TextField(blank=True)
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.get_target_type_display()} #{self.target_id} の通報"

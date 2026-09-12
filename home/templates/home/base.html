@@ -295,6 +295,26 @@
     </form>
 </aside>
 
+{% if messages %}
+<div style="padding:10px 15px 0;">
+    {% for message in messages %}
+    <div style="
+        padding:10px 14px;
+        border-radius:8px;
+        margin-bottom:8px;
+        font-size:14px;
+        {% if message.tags == 'error' %}
+            background:#fdeaea; color:#c0392b;
+        {% else %}
+            background:#e8f5e9; color:#2e7d32;
+        {% endif %}
+    ">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
 {% block content %}
 {% endblock %}
 

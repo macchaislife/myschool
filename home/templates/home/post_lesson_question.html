@@ -1,5 +1,10 @@
 {% extends "home/base.html" %}
 {% block content %}
+{% if error %}
+<div style="max-width:800px; margin:20px auto 0; padding:14px 18px; background:#fdeaea; color:#c0392b; border-radius:12px;">
+    {{ error }}
+</div>
+{% endif %}
 
 <style>
 .page-wrap{

@@ -19,6 +19,18 @@ urlpatterns = [
             name="change_student_password"
         ),
 
+        path(
+            "logout/",
+            views.logout_student,
+            name="logout_student"
+        ),
+
+        path(
+            "report/<str:target_type>/<int:target_id>/",
+            views.report_content,
+            name="report_content"
+        ),
+
         # =========================
         # アンケート
         # =========================
@@ -106,12 +118,6 @@ urlpatterns = [
             "lesson/question/<int:question_id>/",
             views.lesson_question_student_detail,
             name="lesson_question_student_detail"
-        ),
-
-        path(
-            "logout/",
-            views.logout_student,
-            name="logout_student"
         ),
 
         # =========================

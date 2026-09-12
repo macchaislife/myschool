@@ -1,4 +1,7 @@
 from django.contrib import admin, messages
+from django.utils import timezone
+from datetime import timedelta
+
 from .models import (
     generate_initial_password,
     StudentID,
@@ -10,7 +13,9 @@ from .models import (
     SurveyAnswer,
     Choice,
     LessonQuestion,
+    Report,
 )
+
 
 # ------------------------------
 # StudentID（生徒）
@@ -22,6 +27,7 @@ class StudentIDAdmin(admin.ModelAdmin):
         "number",
         "is_graduated",
         "must_change_password",
+        "suspension_status",
         "created_at",
     )
 
@@ -42,17 +48,30 @@ class StudentIDAdmin(admin.ModelAdmin):
         "is_graduated",
         "password_status",
         "must_change_password",
+        "suspended_until",
     )
 
     readonly_fields = ("password_status",)
 
-    actions = ["mark_as_graduated", "reset_password"]
+    actions = [
+        "mark_as_graduated",
+        "reset_password",
+        "suspend_1day",
+        "suspend_7days",
+        "lift_suspension",
+    ]
 
     def password_status(self, obj):
         if obj.pk and obj.password:
             return "設定済み（変更する場合は一覧画面で選択して「パスワードを再発行する」を実行してください）"
         return "未設定（保存すると自動でランダムなパスワードが発行されます）"
     password_status.short_description = "パスワード"
+
+    def suspension_status(self, obj):
+        if obj.is_suspended():
+            return f"停止中（{timezone.localtime(obj.suspended_until):%Y/%m/%d %H:%M} まで）"
+        return "-"
+    suspension_status.short_description = "行動停止"
 
     def mark_as_graduated(self, request, queryset):
         queryset.update(is_graduated=True)
@@ -81,6 +100,36 @@ class StudentIDAdmin(admin.ModelAdmin):
         )
 
     reset_password.short_description = "選択した生徒のパスワードを再発行する"
+
+    def _suspend_for(self, request, queryset, days):
+        until = timezone.now() + timedelta(days=days)
+        queryset.update(suspended_until=until)
+
+        self.message_user(
+            request,
+            f"{queryset.count()}名を{until:%Y/%m/%d %H:%M}まで一時停止にしました。",
+            level=messages.WARNING,
+        )
+
+    def suspend_1day(self, request, queryset):
+        self._suspend_for(request, queryset, days=1)
+
+    suspend_1day.short_description = "選択した生徒を1日間、行動停止にする"
+
+    def suspend_7days(self, request, queryset):
+        self._suspend_for(request, queryset, days=7)
+
+    suspend_7days.short_description = "選択した生徒を7日間、行動停止にする"
+
+    def lift_suspension(self, request, queryset):
+        queryset.update(suspended_until=None)
+
+        self.message_user(
+            request,
+            "選択した生徒の行動停止を解除しました。",
+        )
+
+    lift_suspension.short_description = "選択した生徒の行動停止を解除する"
 
 
 # ------------------------------
@@ -128,6 +177,81 @@ class OpinionCommentAdmin(admin.ModelAdmin):
     )
 
     ordering = ("-created_at",)
+
+
+# ------------------------------
+# Report（通報）
+# ------------------------------
+@admin.register(Report)
+class ReportAdmin(admin.ModelAdmin):
+    list_display = (
+        "target_type",
+        "target_id",
+        "reason",
+        "reporter",
+        "reported_student",
+        "status",
+        "created_at",
+    )
+
+    list_filter = (
+        "status",
+        "target_type",
+        "reason",
+    )
+
+    search_fields = (
+        "reporter__student_id",
+        "reported_student__student_id",
+        "detail",
+    )
+
+    ordering = ("-created_at",)
+
+    actions = ["mark_as_reviewed", "suspend_reported_student_7days"]
+
+    def mark_as_reviewed(self, request, queryset):
+        queryset.update(status="reviewed")
+
+    mark_as_reviewed.short_description = "対応済みにする"
+
+    def suspend_reported_student_7days(self, request, queryset):
+        """
+        選択した通報について、通報された生徒を7日間の行動停止にする。
+        1つの通報に対して複数回実行しても、停止期限が延びるだけ。
+        """
+        until = timezone.now() + timedelta(days=7)
+        suspended = []
+
+        for report in queryset:
+            student = report.reported_student
+
+            if not student:
+                continue
+
+            student.suspended_until = until
+            student.save()
+            suspended.append(student.student_id)
+
+        queryset.update(status="reviewed")
+
+        if suspended:
+            self.message_user(
+                request,
+                f"{'、'.join(suspended)} を{until:%Y/%m/%d %H:%M}まで行動停止にしました。",
+                level=messages.WARNING,
+            )
+        else:
+            self.message_user(
+                request,
+                "通報された生徒が特定できないものが含まれていました（匿名投稿など）。"
+                "個別に生徒一覧から行動停止にしてください。",
+                level=messages.WARNING,
+            )
+
+    suspend_reported_student_7days.short_description = (
+        "通報された生徒を7日間、行動停止にする（対応済みにする）"
+    )
 
 
 # ------------------------------

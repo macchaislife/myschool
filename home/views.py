@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import (
     Opinion,
     OpinionLike,
+    OpinionComment,
     StudentID,
     Survey,
     SurveyQuestion,
@@ -9,14 +10,23 @@ from .models import (
     Choice,
     SurveyAnswer,
     LessonQuestion,
+    Report,
 )
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib import messages
 from django.utils import timezone
 from django.http import HttpResponseForbidden
 
 import json
+
+
+def suspension_notice(student):
+    return (
+        "投稿・コメントなどの操作は一時的に制限されています。"
+        f"（解除予定: {timezone.localtime(student.suspended_until):%Y/%m/%d %H:%M}）"
+    )
 
 
 # =====================================================
@@ -80,6 +90,17 @@ def login_student(request):
 
 
 # =====================================================
+# 生徒ログアウト
+# =====================================================
+def logout_student(request):
+
+    if request.method == "POST":
+        request.session.flush()
+
+    return redirect("login_student")
+
+
+# =====================================================
 # 生徒パスワード変更
 # =====================================================
 def change_student_password(request):
@@ -139,6 +160,75 @@ def change_student_password(request):
 
 
 # =====================================================
+# 通報
+# =====================================================
+def report_content(request, target_type, target_id):
+
+    if request.method != "POST":
+        return redirect("index")
+
+    student_id = request.session.get("student_id")
+
+    if not student_id:
+        return redirect("login_student")
+
+    reporter = StudentID.objects.filter(id=student_id).first()
+
+    if not reporter:
+        return redirect("login_student")
+
+    obj = None
+    reported_student = None
+
+    if target_type == "opinion":
+        obj = Opinion.objects.filter(id=target_id).first()
+        if obj:
+            reported_student = obj.student
+        back = redirect("opinion_detail", opinion_id=target_id)
+
+    elif target_type == "comment":
+        obj = OpinionComment.objects.filter(id=target_id).first()
+        if obj:
+            reported_student = obj.student
+        back = redirect(
+            "opinion_detail",
+            opinion_id=obj.opinion_id if obj else 0
+        )
+
+    elif target_type == "lesson_question":
+        obj = LessonQuestion.objects.filter(id=target_id).first()
+        if obj:
+            reported_student = obj.student
+        back = redirect(
+            "lesson_question_student_detail",
+            question_id=target_id
+        )
+
+    else:
+        return redirect("index")
+
+    if not obj:
+        messages.error(request, "通報対象が見つかりませんでした。")
+        return back
+
+    Report.objects.create(
+        reporter=reporter,
+        reported_student=reported_student,
+        target_type=target_type,
+        target_id=target_id,
+        reason=request.POST.get("reason", "other"),
+        detail=request.POST.get("detail", "").strip(),
+    )
+
+    messages.success(
+        request,
+        "通報を受け付けました。ご協力ありがとうございます。管理者が内容を確認します。"
+    )
+
+    return back
+
+
+# =====================================================
 # 意見投稿
 # =====================================================
 def post_opinion(request):
@@ -151,6 +241,13 @@ def post_opinion(request):
     student = StudentID.objects.filter(
         id=student_id
     ).first()
+
+    if student and student.is_suspended():
+        return render(
+            request,
+            "home/post_opinion.html",
+            {"error": suspension_notice(student)}
+        )
 
     if request.method == "POST":
 
@@ -468,6 +565,20 @@ def survey_results(request, survey_id):
 # 授業への質問
 # =====================================================
 def post_lesson_question(request):
+
+    student_id = request.session.get("student_id")
+    student = None
+
+    if student_id:
+        student = StudentID.objects.filter(id=student_id).first()
+
+    if student and student.is_suspended():
+        return render(
+            request,
+            "home/post_lesson_question.html",
+            {"error": suspension_notice(student)}
+        )
+
     if request.method == "POST":
         title = request.POST.get("title")
         content = request.POST.get("content")
@@ -640,6 +751,10 @@ def opinion_comment(request, opinion_id):
     if not student:
         return redirect("login_student")
 
+    if student.is_suspended():
+        messages.error(request, suspension_notice(student))
+        return redirect("opinion_detail", opinion_id=opinion_id)
+
     opinion = get_object_or_404(
         Opinion,
         id=opinion_id
@@ -664,13 +779,3 @@ def opinion_comment(request, opinion_id):
         "opinion_detail",
         opinion_id=opinion_id
     )
-
-# =====================================================
-# 生徒ログアウト
-# =====================================================
-def logout_student(request):
-
-    if request.method == "POST":
-        request.session.flush()
-
-    return redirect("login_student")
