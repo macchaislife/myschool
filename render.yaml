@@ -1,11 +1,21 @@
 services:
   - type: web
     name: myschool
-    env: python
+    runtime: python                 # env: python から変更(envは非推奨)
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn config.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
-        value: myschool.settings
+        value: config.settings      # manage.py / startCommand と一致させる
       - key: PYTHON_VERSION
-        value: 3.11
+        value: 3.11.9               # パッチバージョンまで必須
+      - key: SECRET_KEY
+        generateValue: true         # ランダム生成させる(ハードコード厳禁)
+      - key: DATABASE_URL
+        fromDatabase:
+          name: myschool-db
+          property: connectionString
+
+databases:
+  - name: myschool-db
+    plan: free
