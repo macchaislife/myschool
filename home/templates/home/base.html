@@ -289,6 +289,20 @@
         <a href="{% url 'change_student_password' %}">パスワード変更</a>
     </nav>
 
+    <div style="
+        background:#fff4f4;
+        border:1px solid #f3c9c9;
+        border-radius:10px;
+        padding:12px;
+        margin-bottom:12px;
+        font-size:13px;
+        line-height:1.6;
+    ">
+        <strong>一人で抱えず相談したいときは</strong><br>
+        24時間子供SOSダイヤル（文部科学省・通話無料）<br>
+        <a href="tel:0120078310" style="color:#c0392b; font-weight:bold;">0120-0-78310</a>
+    </div>
+
     <form method="POST" action="{% url 'logout_student' %}" class="drawer-logout-form">
         {% csrf_token %}
         <button type="submit" class="drawer-logout-btn">ログアウト</button>
