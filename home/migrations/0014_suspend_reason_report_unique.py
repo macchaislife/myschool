@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='studentid',
             name='suspend_reason',
-            field=models.CharField(blank=True, max_length=200),
+            field=models.CharField(blank=True, max_length=200, default=""),
         ),
         migrations.AddConstraint(
             model_name='report',
