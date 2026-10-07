@@ -264,6 +264,11 @@ class SurveyAdmin(admin.ModelAdmin):
     search_fields = ("title",)
     ordering = ("-created_at",)
 
+class ChoiceInline(admin.TabularInline):
+    model = Choice
+    extra = 1  # 新規行を1行追加
+    fields = ("text",)
+
 
 # ------------------------------
 # SurveyQuestion（質問）
@@ -274,6 +279,7 @@ class SurveyQuestionAdmin(admin.ModelAdmin):
     list_filter = ("survey", "q_type")
     search_fields = ("text",)
     ordering = ("survey",)
+    inlines = [ChoiceInline]
 
 
 # ------------------------------
@@ -298,10 +304,10 @@ class SurveyAnswerAdmin(admin.ModelAdmin):
 # ------------------------------
 # Choice
 # ------------------------------
-@admin.register(Choice)
-class ChoiceAdmin(admin.ModelAdmin):
-    list_display = ("text", "question")
-    list_filter = ("question",)
+#@admin.register(Choice)
+#class ChoiceAdmin(admin.ModelAdmin):
+#    list_display = ("text", "question")
+#    list_filter = ("question",)
 
 
 # ------------------------------
